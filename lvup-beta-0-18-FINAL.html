@@ -1,0 +1,2883 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="theme-color" content="#050d1a"/>
+<meta name="color-scheme" content="light dark"/>
+<meta name="permissions" content="camera,microphone,geolocation,photos"/>
+<meta name="webintoapp" content="true"/>
+<title>Lv-UP STORE</title>
+
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAEpRBZbJEhWtgez9koz2xJ4mlSaWXZz4s",
+  authDomain:"lvupstore.firebaseapp.com",
+  projectId:"lvupstore",
+  storageBucket:"lvupstore.firebasestorage.app",
+  messagingSenderId:"260041604472",
+  appId:"1:260041604472:web:ad0def517e699faf2c5c8d"
+});
+const fbAuth=firebase.auth();
+const fbDb=firebase.firestore();
+const fbStorage=firebase.storage();
+const fbProvider=new firebase.auth.GoogleAuthProvider();
+fbAuth.languageCode='fr';
+window._purchases=[];
+window._library=[];
+</script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#050d1a;--bg2:#0a1628;--card:rgba(10,25,50,0.85);
+  --border:rgba(0,200,255,0.2);--text:#e8f4ff;--sub:#7ab8d4;
+  --accent:#00c8ff;--accent2:#0057ff;--gold:#f5c842;--nav:#06111f;
+  --input:rgba(0,30,60,0.7);
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#dff0ff;--bg2:#c8e6fa;--card:rgba(255,255,255,0.88);
+    --border:rgba(0,150,220,0.22);--text:#0a1628;--sub:#2264a0;
+    --accent:#0077cc;--accent2:#0040bb;--gold:#d4a000;--nav:#d0e8ff;
+    --input:rgba(200,230,255,0.8);
+  }
+}
+.force-dark{
+  --bg:#050d1a!important;--bg2:#0a1628!important;
+  --card:rgba(10,25,50,0.85)!important;
+  --border:rgba(0,200,255,0.2)!important;--text:#e8f4ff!important;
+  --sub:#7ab8d4!important;--accent:#00c8ff!important;
+  --accent2:#0057ff!important;--gold:#f5c842!important;
+  --nav:#06111f!important;--input:rgba(0,30,60,0.7)!important;
+}
+.force-light{
+  --bg:#dff0ff!important;--bg2:#c8e6fa!important;
+  --card:rgba(255,255,255,0.88)!important;
+  --border:rgba(0,150,220,0.22)!important;--text:#0a1628!important;
+  --sub:#2264a0!important;--accent:#0077cc!important;
+  --accent2:#0040bb!important;--gold:#d4a000!important;
+  --nav:#d0e8ff!important;--input:rgba(200,230,255,0.8)!important;
+}
+.light{
+  --bg:#dff0ff;--bg2:#c8e6fa;--card:rgba(255,255,255,0.88);
+  --border:rgba(0,150,220,0.22);--text:#0a1628;--sub:#2264a0;
+  --accent:#0077cc;--accent2:#0040bb;--gold:#d4a000;--nav:#d0e8ff;
+  --input:rgba(200,230,255,0.8);
+}
+body{font-family:'Arial Black',Arial,sans-serif;background:var(--bg);color:var(--text);
+  max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;
+  transition:all .4s;position:relative;}
+
+/* ── RESPONSIVE PORTRAIT/PAYSAGE ── */
+@media (max-aspect-ratio: 1/1) {
+  body { max-width:100%; }
+}
+
+/* ── MODE PAYSAGE — classe .landscape ajoutée par JS sur html ── */
+html.landscape, html.landscape body {
+  max-width:100vw!important;
+  width:100vw;
+  height:100vh;
+  margin:0;
+  padding:0;
+}
+body.landscape {
+  max-width:100%;
+  display:block;
+  width:100%;
+  height:100vh;
+  overflow:hidden;
+}
+/* Tabs → décalés à droite pour laisser place à la sidebar */
+body.landscape .tab{
+  margin-left:220px;
+  padding:20px 28px 40px;
+  min-height:calc(100vh - 56px);
+  overflow-y:auto;
+}
+/* Nav → sidebar verticale fixe à gauche */
+body.landscape .bottom-nav{
+  position:fixed;
+  left:0;top:56px;bottom:0;
+  width:220px;max-width:220px;
+  transform:none;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:stretch;
+  padding:16px 10px 24px;
+  gap:4px;
+  border-top:none;
+  border-right:1px solid var(--border);
+  background:var(--nav);
+  backdrop-filter:blur(30px);
+  height:calc(100vh - 56px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  left:0;
+  bottom:auto;
+}
+body.landscape .nav-btn{
+  width:100%;
+  flex-direction:row;
+  justify-content:flex-start;
+  align-items:center;
+  gap:12px;
+  padding:13px 16px;
+  border-radius:12px;
+  font-size:14px;
+  text-align:left;
+}
+body.landscape .nav-btn span.ni{
+  font-size:22px;
+  flex-shrink:0;
+}
+/* Grilles plus larges en paysage */
+body.landscape .plat-grid{grid-template-columns:repeat(7,1fr);}
+body.landscape .featured-wrap{height:280px;}
+/* Modales centrées en paysage */
+body.landscape .modal-overlay{
+  align-items:center;
+  justify-content:center;
+}
+body.landscape .modal-sheet{
+  border-radius:20px;
+  max-width:500px;
+  max-height:85vh;
+  margin:auto;
+}
+/* modal-open: gestion via html overflow + scrollY save dans JS */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes slideDown{from{transform:translateY(0);opacity:1}to{transform:translateY(100%);opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes bounceIn{0%{transform:scale(0.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(0,200,255,0.3)}50%{box-shadow:0 0 25px rgba(0,200,255,0.7)}}
+
+/* Animations globales */
+.tab.active{animation:fadeIn .28s ease;}
+.game-card{animation:fadeIn .2s ease;transition:transform .15s,box-shadow .15s;}
+.game-card:active{transform:scale(0.98);}
+.plat-btn{transition:all .2s;animation:fadeIn .2s ease;}
+.plat-btn:active{transform:scale(0.92)!important;}
+.opt-row{transition:all .15s;}
+.opt-row:active{transform:scale(0.98);background:rgba(0,200,255,0.06);}
+.nav-btn{transition:all .2s;}
+.nav-btn.active .ni{animation:bounceIn .3s ease;}
+.dl-btn:active{transform:scale(0.95);}
+.big-btn:active{transform:scale(0.97)!important;filter:brightness(0.95)!important;}
+.conn-btn:active{transform:scale(0.95);}
+
+/* Modal swipe */
+.modal-sheet{transition:transform .32s cubic-bezier(.4,0,.2,1);}
+.modal-sheet.swiping{transition:none;}
+
+.bubble{position:fixed;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.15),rgba(0,180,255,.02));
+  border:1px solid rgba(0,200,255,.1);animation:float linear infinite;
+  pointer-events:none;z-index:0;}
+
+/* BG gradient */
+.bg-grad{position:fixed;inset:0;
+  background:radial-gradient(ellipse at 15% 15%,rgba(0,100,200,.14) 0%,transparent 55%),
+             radial-gradient(ellipse at 85% 85%,rgba(0,50,150,.10) 0%,transparent 55%);
+  pointer-events:none;z-index:0;}
+
+/* Toast */
+#toast{position:fixed;top:72px;left:50%;transform:translateX(-50%);
+  padding:11px 22px;border-radius:16px;border:1px solid;
+  font-weight:700;font-size:13px;z-index:9999;white-space:nowrap;
+  backdrop-filter:blur(20px);display:none;animation:slideUp .3s ease;}
+
+/* Header */
+header{position:sticky;top:0;z-index:100;background:var(--nav);
+  backdrop-filter:blur(30px);padding:13px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 4px 30px rgba(0,0,0,.15);}
+.logo-name{font-family:'Arial Black',Arial,sans-serif;font-weight:900;font-size:18px;
+  color:var(--accent);letter-spacing:1px;}
+.logo-sub{font-size:9px;color:var(--sub);letter-spacing:2px;}
+.header-right{display:flex;gap:8px;align-items:center;}
+.prem-badge{background:linear-gradient(135deg,var(--gold),#ff9900);
+  border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:#000;}
+.avatar-sm{width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;border:2px solid var(--accent);}
+.conn-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;border-radius:12px;padding:8px 14px;
+  font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* Nav */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;background:var(--nav);
+  backdrop-filter:blur(30px);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:8px 0 18px;z-index:100;}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:7px 14px;border-radius:14px;border:none;
+  background:transparent;cursor:pointer;font-family:inherit;
+  font-size:10px;font-weight:600;color:var(--sub);transition:all .2s;}
+.nav-btn.active{background:rgba(0,200,255,.18);color:var(--accent);}
+.nav-btn span.ni{font-size:20px;}
+
+/* Tabs */
+.tab{display:none;padding:16px 16px 100px;position:relative;z-index:2;animation:slideUp .32s ease;}
+.tab.active{display:block;}
+
+/* Search */
+.search-box{display:flex;align-items:center;
+  background:var(--input);border:1px solid var(--border);
+  border-radius:14px;padding:12px 14px;margin-bottom:18px;
+  backdrop-filter:blur(20px);}
+.search-box input{flex:1;background:none;border:none;outline:none;
+  color:var(--text);font-size:14px;font-family:inherit;}
+.search-box input::placeholder{color:var(--sub);}
+.search-icon{font-size:16px;color:var(--sub);margin-right:8px;}
+
+/* Section title */
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.sec-title{font-weight:700;font-size:16px;color:var(--text);}
+.see-all{font-size:12px;color:var(--accent);font-weight:700;cursor:pointer;}
+
+/* Featured */
+.featured-wrap{position:relative;height:230px;display:flex;align-items:center;justify-content:center;overflow:visible;margin-bottom:6px;clip-path:inset(0 -100% 0 -100%);}
+.feat-card{position:absolute;width:130px;border-radius:18px;overflow:hidden;
+  border:2px solid var(--border);cursor:pointer;transition:all .62s cubic-bezier(0.25,0.46,0.45,0.94);}
+.feat-card img{width:100%;height:172px;object-fit:cover;display:block;}
+.feat-label{text-align:center;padding:5px 0;font-size:11px;font-weight:700;}
+.dots{display:flex;justify-content:center;gap:6px;margin-bottom:20px;margin-top:6px;}
+.dot{height:6px;border-radius:3px;background:var(--border);
+  transition:all .3s;cursor:pointer;}
+.dot.active{background:var(--accent);}
+
+/* Platform grid */
+.plat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:22px;}
+.plat-btn{background:var(--card);backdrop-filter:blur(16px);
+  border:1px solid rgba(0,200,255,.2);border-radius:14px;
+  padding:11px 4px;cursor:pointer;text-align:center;transition:all .2s;}
+.plat-btn:hover{transform:scale(1.07);}
+.plat-icon{font-size:20px;display:block;margin-bottom:3px;}
+.plat-label{font-size:8px;font-weight:700;}
+
+/* Glass card */
+.glass-card{background:var(--card);backdrop-filter:blur(18px);
+  border:1px solid var(--border);border-radius:18px;
+  box-shadow:0 8px 32px rgba(0,100,200,.08);}
+
+/* Ads banner */
+.ads-banner{padding:15px;margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(245,200,66,.08),rgba(255,120,0,.05));
+  border:1px solid rgba(245,200,66,.4);border-radius:18px;
+  display:flex;align-items:center;justify-content:space-between;}
+.ads-title{font-weight:700;color:var(--gold);font-size:14px;}
+.ads-sub{font-size:11px;color:var(--sub);margin-top:2px;}
+.ads-btn{background:linear-gradient(135deg,var(--gold),#ff9900);color:#000;
+  border:none;border-radius:12px;padding:8px 14px;font-weight:700;
+  font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* Socials */
+.socials-row{display:flex;gap:9px;margin-bottom:16px;}
+.social-btn{flex:1;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);border-radius:14px;
+  padding:10px 4px;text-align:center;text-decoration:none;
+  font-size:10px;font-weight:700;transition:all .2s;cursor:pointer;}
+.social-btn:hover{transform:scale(1.05);}
+.social-icon{font-size:18px;display:block;margin-bottom:3px;}
+
+/* Filter pills */
+.filter-row{display:flex;gap:8px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;}
+.filter-row::-webkit-scrollbar{display:none;}
+.pill{border-radius:20px;padding:7px 12px;border:1px solid;
+  font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;
+  background:var(--card);font-family:inherit;transition:all .2s;}
+
+/* Game card */
+.game-card{display:flex;align-items:center;gap:12px;padding:13px;
+  border-radius:16px;border:1px solid var(--border);
+  background:var(--card);backdrop-filter:blur(18px);margin-bottom:10px;}
+.game-img{width:56px;height:76px;border-radius:10px;object-fit:cover;
+  border:1px solid var(--border);flex-shrink:0;}
+.game-title{font-weight:700;font-size:13px;color:var(--text);
+  margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.game-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.game-tag{border-radius:8px;padding:2px 8px;font-size:9px;font-weight:700;border:1px solid;}
+.game-size{font-size:9px;color:var(--sub);}
+.game-rating{font-size:9px;color:var(--gold);}
+.dl-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;border-radius:12px;padding:9px 12px;
+  font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;
+  flex-shrink:0;transition:all .2s;}
+.dl-btn:hover{filter:brightness(1.15);transform:scale(1.04);}
+
+/* Center view */
+.center-view{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;min-height:60vh;text-align:center;}
+
+/* Big button */
+.big-btn{border:none;border-radius:14px;padding:13px 28px;
+  font-weight:700;font-size:15px;cursor:pointer;font-family:inherit;
+  transition:all .2s;display:inline-block;}
+.big-btn:hover{filter:brightness(1.1);transform:scale(1.02);}
+
+/* Profile */
+.profile-card{padding:22px;text-align:center;margin-bottom:14px;}
+.avatar-lg{width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:40px;margin:0 auto 12px;position:relative;
+  border:3px solid var(--accent);}
+.avatar-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.edit-btn{position:absolute;bottom:2px;right:-10px;width:30px;height:30px;
+  border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:2px solid var(--bg);cursor:pointer;font-size:13px;display:flex;
+  align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.4);
+  z-index:10;flex-shrink:0;}
+
+/* ── SCROLL ANIMATIONS ── */
+@keyframes revealUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes revealLeft{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes revealScale{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
+.reveal{opacity:0;transition:opacity .18s ease,transform .18s ease;}
+.reveal.up{transform:translateY(16px);}
+.reveal.left{transform:translateX(-12px);}
+.reveal.scale{transform:scale(0.96);}
+.reveal.visible{opacity:1!important;transform:none!important;}
+.reveal-stagger > *{opacity:0;transform:translateY(12px);transition:opacity .18s ease,transform .18s ease;}
+.reveal-stagger.visible > *{opacity:1;transform:none;}
+.reveal-stagger.visible > *:nth-child(2){transition-delay:.04s}
+.reveal-stagger.visible > *:nth-child(3){transition-delay:.08s}
+
+/* ── TIER BADGES ── */
+.tier-noob{background:linear-gradient(135deg,#00cc88,#00aa66);}
+.tier-pro{background:linear-gradient(135deg,#0088ff,#0055cc);}
+.tier-elite{background:linear-gradient(135deg,#9900ff,#6600cc);}
+.tier-maitre{background:linear-gradient(135deg,var(--gold),#ff9900);}
+.tier-card{border-radius:18px;padding:16px;margin-bottom:12px;cursor:pointer;
+  border:2px solid transparent;transition:all .25s;position:relative;overflow:hidden;}
+.tier-card:active{transform:scale(0.98);}
+.tier-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,200,255,.2);}
+.tier-name{font-weight:900;font-size:17px;color:#fff;margin-bottom:3px;}
+.tier-price{font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;}
+.tier-desc{font-size:11px;color:rgba(255,255,255,.85);line-height:1.5;}
+.tier-badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.25);
+  border-radius:10px;padding:3px 9px;font-size:10px;font-weight:700;color:#fff;}
+
+/* ── LANG MODAL ── */
+.lang-item{display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-radius:14px;border:1px solid var(--border);background:var(--card);
+  cursor:pointer;margin-bottom:8px;transition:all .2s;}
+.lang-item:active{transform:scale(0.98);}
+.lang-item.active{border-color:var(--accent);background:rgba(0,200,255,.08);}
+.lang-item-flag{font-size:24px;}
+.lang-item-name{flex:1;font-weight:600;font-size:15px;}
+.lang-item-check{color:var(--accent);font-size:18px;}
+.profile-name{font-weight:700;font-size:20px;color:var(--text);}
+.profile-email{font-size:12px;color:var(--sub);margin:4px 0 12px;}
+.prem-badge-lg{display:inline-flex;align-items:center;gap:6px;
+  border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:14px;}
+.stat-card{padding:12px 8px;text-align:center;border-radius:16px;border:1px solid var(--border);background:var(--card);}
+.stat-val{font-weight:700;font-size:14px;color:var(--accent);}
+.stat-lbl{font-size:9px;color:var(--sub);margin-top:2px;}
+.opt-row{display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-radius:16px;border:1px solid var(--border);background:var(--card);
+  cursor:pointer;margin-bottom:9px;transition:all .2s;}
+.opt-row:hover{transform:scale(1.02);}
+.opt-label{flex:1;font-weight:600;font-size:14px;}
+.opt-arrow{color:var(--sub);font-size:20px;}
+.socials-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.social-card{border:1px solid;border-radius:14px;padding:13px;
+  text-align:center;text-decoration:none;font-size:12px;font-weight:700;
+  background:rgba(255,255,255,.04);transition:all .2s;cursor:pointer;}
+.social-card:hover{transform:scale(1.04);}
+.footer-txt{text-align:center;margin-top:20px;font-size:11px;color:var(--sub);}
+
+/* Settings */
+.setting-row{display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--border);}
+.setting-lbl{font-weight:600;font-size:14px;color:var(--text);}
+.setting-sub{font-size:11px;color:var(--sub);margin-top:2px;}
+.toggle{width:50px;height:26px;border-radius:13px;position:relative;
+  cursor:pointer;transition:all .3s;}
+.toggle-thumb{position:absolute;top:3px;width:20px;height:20px;
+  border-radius:50%;background:#fff;transition:all .3s;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);z-index:500;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:var(--bg2);border:1px solid var(--border);
+  border-radius:24px 24px 0 0;padding:26px;width:100%;max-width:430px;
+  max-height:88vh;overflow-y:auto;animation:slideUp .32s ease;}
+.modal-handle{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,0.25);
+  margin:0 auto 18px;cursor:pointer;transition:background .2s;}
+.modal-handle:hover{background:rgba(255,255,255,0.45);}
+.modal-overlay.open .modal-sheet{touch-action:pan-y;}
+.modal-title{font-family:'Arial Black',Arial,sans-serif;font-size:17px;font-weight:900;
+  text-align:center;margin-bottom:6px;letter-spacing:1px;}
+.modal-sub{font-size:13px;text-align:center;color:var(--sub);margin-bottom:20px;line-height:1.6;}
+.modal-foot{font-size:11px;text-align:center;color:var(--sub);margin-top:16px;}
+.google-btn{display:flex;align-items:center;gap:10px;background:#fff;
+  border:none;border-radius:16px;padding:14px 28px;margin:0 auto;
+  font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.google-g{font-size:20px;font-weight:900;color:#4285f4;}
+.feature-box{border-radius:16px;padding:14px;margin-bottom:14px;border:1px solid;}
+.feature-txt{font-size:13px;margin-bottom:5px;}
+.price{font-size:32px;font-weight:900;text-align:center;margin-bottom:4px;}
+.price-sub{font-size:13px;color:var(--sub);text-align:center;margin-bottom:18px;}
+.dl-modal-img{width:100px;height:132px;border-radius:14px;display:block;
+  margin:0 auto 14px;object-fit:cover;border:2px solid var(--accent);}
+.dl-btns{display:flex;gap:10px;}
+.avatar-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+.av-option{aspect-ratio:1;border-radius:14px;background:var(--card);
+  border:2px solid var(--border);display:flex;align-items:center;
+  justify-content:center;font-size:26px;cursor:pointer;transition:all .2s;}
+.av-option.selected{border-color:var(--accent);transform:scale(1.1);
+  box-shadow:0 0 14px rgba(0,200,255,.5);}
+.edit-input{width:100%;background:var(--input);border:1px solid var(--border);
+  border-radius:14px;padding:13px;font-size:14px;color:var(--text);
+  font-family:inherit;outline:none;margin-bottom:4px;}
+.char-count{font-size:10px;color:var(--sub);text-align:right;margin-bottom:16px;}
+
+.auth-badge,.profile-auth-badge{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(0,200,255,.28);background:rgba(0,200,255,.10);color:var(--accent);font-size:11px;font-weight:700;}
+.link-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.link-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 12px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:11px;font-weight:700;text-decoration:none;transition:all .2s;}
+.link-btn:hover{transform:scale(1.03);border-color:var(--accent);color:var(--accent);}
+.mic-recording{background:rgba(255,0,85,.15)!important;color:#ff3366!important;box-shadow:0 0 0 4px rgba(255,0,85,.12);animation:pulse 1s infinite;}
+
+/* ── NOUVEAUX STYLES ── */
+[dir=rtl]{direction:rtl;text-align:right;}
+[dir=rtl] .search-icon{margin-right:0;margin-left:8px;}
+[dir=rtl] .opt-arrow{transform:scaleX(-1);}
+
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:none;border-radius:14px;padding:13px;width:100%;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:all .2s;font-family:inherit;color:#333;}
+.google-btn:hover{transform:scale(1.02);}
+.google-btn:disabled{opacity:.7;cursor:wait;}
+
+.auth-sep{display:flex;align-items:center;gap:10px;margin:14px 0;}
+.auth-sep::before,.auth-sep::after{content:'';flex:1;height:1px;background:var(--border);}
+.auth-sep span{font-size:11px;color:var(--sub);font-weight:600;white-space:nowrap;}
+
+.country-select{width:100%;background:var(--input);border:1px solid var(--border);border-radius:14px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;cursor:pointer;appearance:none;-webkit-appearance:none;}
+.country-select option{background:var(--bg2);color:var(--text);}
+.country-select:focus{border-color:var(--accent);}
+
+.wave-box{background:rgba(0,170,255,.08);border:2px solid rgba(0,170,255,.4);border-radius:18px;padding:20px;text-align:center;margin-bottom:16px;}
+.wave-title{font-weight:900;font-size:16px;color:#00aaff;margin-bottom:6px;}
+.wave-notice{font-size:12px;color:var(--sub);line-height:1.6;}
+
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;margin-bottom:14px;}
+.lang-btn{padding:10px 8px;border-radius:12px;border:2px solid var(--border);background:var(--card);color:var(--text);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center;}
+.lang-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,200,255,.1);}
+
+</style>
+</head>
+<body>
+
+<div class="bg-grad"></div>
+<!-- Bubbles -->
+<div class="bubble" style="left:8%;top:15%;width:22px;height:22px;opacity:.1;animation-duration:8s;animation-delay:0s;"></div>
+<div class="bubble" style="left:85%;top:25%;width:16px;height:16px;opacity:.08;animation-duration:11s;animation-delay:2s;"></div>
+<div class="bubble" style="left:15%;top:65%;width:28px;height:28px;opacity:.09;animation-duration:9s;animation-delay:4s;"></div>
+<div class="bubble" style="left:75%;top:70%;width:14px;height:14px;opacity:.07;animation-duration:13s;animation-delay:1s;"></div>
+<div class="bubble" style="left:50%;top:40%;width:10px;height:10px;opacity:.06;animation-duration:7s;animation-delay:3s;"></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Header -->
+<header>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button onclick="openModal('settings')" style="background:none;border:none;cursor:pointer;font-size:24px;color:var(--text);">☰</button>
+    <div>
+      <div class="logo-name">Lv-UP <span style="color:var(--gold);">STORE</span></div>
+      <div class="logo-sub">GAME Lv-UP</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="prem-badge" id="prem-header" style="display:none;">👑 Premium</div>
+    <div id="avatar-header" class="avatar-sm" onclick="setTab('profile')" style="display:none;">🎮</div>
+    <button id="conn-header" class="conn-btn" onclick="openModal('login')">Connexion</button>
+  </div>
+</header>
+
+<!-- HOME TAB -->
+<div class="tab active" id="tab-home">
+
+  <!-- Featured -->
+  <div class="sec-hdr">
+    <span class="sec-title" id="sec-home-featured">🔥 Jeux Vedettes</span>
+    <span class="see-all" id="sec-home-seeall" onclick="setTab('games')">Voir tout →</span>
+  </div>
+  <div class="featured-wrap" id="featured-wrap"></div>
+  <div class="dots" id="feat-dots"></div>
+
+  <!-- Platforms -->
+  <div class="sec-title" id="sec-home-platforms" style="margin-bottom:12px;">🎮 Plateformes</div>
+  <div class="plat-grid" id="plat-grid"></div>
+
+  <!-- No ads banner -->
+  <div class="ads-banner" id="ads-banner">
+    <div>
+      <div class="ads-title" id="sec-ads-title">🚫 Supprimer les pubs</div>
+      <div class="ads-sub" id="sec-ads-sub">Paiement unique • 5 000 F</div>
+    </div>
+    <button class="ads-btn" id="sec-ads-btn" onclick="handleNoAdsClick()">Activer</button>
+  </div>
+
+  <!-- Socials -->
+  <div class="sec-title" id="sec-home-followus" style="color:var(--sub);font-size:12px;letter-spacing:1px;margin-bottom:10px;">NOUS SUIVRE</div>
+  <div class="socials-row" id="socials-row"></div>
+  <div class="link-buttons">
+    <a class="link-btn" id="lb-home-tab" href="https://gamelv-up.blogspot.com/2026/03/page-daccord-lv-up-store.html" target="_blank">🏠 Accueil</a>
+    <a class="link-btn" id="lb-privacy-tab" href="https://gamelv-up.blogspot.com/2026/03/lv-up-store-politique-de-confidentialite.html" target="_blank">🔒 Confidentialité</a>
+    <a class="link-btn" id="lb-terms-tab" href="https://gamelv-up.blogspot.com/2025/03/lv-up-store-conditions-dutilisateur.html" target="_blank">📜 Conditions</a>
+  </div>
+</div>
+
+<!-- GAMES TAB -->
+<div class="tab" id="tab-games">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Rechercher..." id="search-games" oninput="renderGames()"/>
+    <button id="mic-btn" onclick="startMic()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--accent);padding:2px 4px;border-radius:8px;transition:all .2s;flex-shrink:0;">🎙️</button>
+  </div>
+  <div class="filter-row" id="filter-row"></div>
+  <div id="games-list"></div>
+</div>
+
+<!-- LIBRARY TAB -->
+<div class="tab" id="tab-library">
+  <div class="center-view" id="lib-content"></div>
+</div>
+
+<!-- DOWNLOADS TAB -->
+<div class="tab" id="tab-downloads" style="padding:16px 16px 100px;">
+  <div id="downloads-content"></div>
+</div>
+
+<!-- PROFILE TAB -->
+<div class="tab" id="tab-profile">
+  <div id="profile-content"></div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-home" onclick="setTab('home')"><span class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></span><span>Accueil</span></button>
+  <button class="nav-btn" id="nav-games" onclick="setTab('games')"><span class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5S14.67 12 15.5 12s1.5.67 1.5 1.5S16.33 15 15.5 15zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 10 18.5 10s1.5.67 1.5 1.5S19.33 12 18.5 12z"/></svg></span><span>Jeux</span></button>
+  <button class="nav-btn" id="nav-downloads" onclick="setTab('downloads')"><span class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></span><span>Téléch.</span></button>
+  <button class="nav-btn" id="nav-library" onclick="setTab('library')"><span class="ni"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></span><span>Biblio</span></button>
+</nav>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-login" onclick="closeModalOnBg(event,'modal-login')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-login')"></div>
+    <div style="text-align:center;font-size:52px;margin-bottom:10px;">🎮</div>
+    <div class="modal-title" style="color:var(--accent);">Lv-UP STORE</div>
+
+    <!-- Tabs connexion / inscription -->
+    <div style="display:flex;background:var(--input);border-radius:12px;padding:4px;margin-bottom:18px;gap:4px;">
+      <button id="tab-login-btn" onclick="switchAuthTab('login')"
+        style="flex:1;border:none;border-radius:9px;padding:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;background:var(--accent);color:#fff;transition:all .2s;">
+        Connexion
+      </button>
+      <button id="tab-register-btn" onclick="switchAuthTab('register')"
+        style="flex:1;border:none;border-radius:9px;padding:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;background:transparent;color:var(--sub);transition:all .2s;">
+        Inscription
+      </button>
+    </div>
+
+    <!-- Formulaire connexion -->
+    <div id="form-login">
+      <input id="login-email" type="email" placeholder="Adresse email" autocomplete="email"
+        style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+      <div style="position:relative;margin-bottom:6px;">
+        <input id="login-password" type="password" placeholder="Mot de passe" autocomplete="current-password"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;padding-right:44px;font-size:14px;color:var(--text);font-family:inherit;outline:none;"/>
+        <button onclick="togglePwd('login-password')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--sub);">👁️</button>
+      </div>
+      <div style="text-align:right;margin-bottom:12px;">
+        <span onclick="doForgotPassword()" style="font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;">Mot de passe oublié ?</span>
+      </div>
+      <div id="login-error" style="color:#ff4444;font-size:12px;margin-bottom:10px;display:none;text-align:center;"></div>
+      <div id="login-success" style="color:#00cc88;font-size:12px;margin-bottom:10px;display:none;text-align:center;"></div>
+      <button onclick="doEmailLogin()" id="btn-email-login" class="big-btn"
+        style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%;margin-bottom:12px;">
+        Se connecter
+      </button>
+      <div class="auth-sep"><span>Ou continuer avec</span></div>
+      <button class="google-btn" onclick="doGoogleLogin()" id="google-login-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuer avec Google
+      </button>
+    </div>
+
+    <!-- Formulaire inscription -->
+    <div id="form-register" style="display:none;">
+      <input id="reg-firstname" type="text" placeholder="Prénom *"
+        style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+      <input id="reg-lastname" type="text" placeholder="Nom *"
+        style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+      <input id="reg-email" type="email" placeholder="Adresse email *" autocomplete="email"
+        style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+      <input id="reg-phone" type="tel" placeholder="Numéro de téléphone *"
+        style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+      <select id="reg-country" class="country-select">
+        <option value="">Sélectionne ton pays *</option>
+      </select>
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="reg-password" type="password" placeholder="Mot de passe (min. 6 car.) *" autocomplete="new-password"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;padding-right:44px;font-size:14px;color:var(--text);font-family:inherit;outline:none;"/>
+        <button onclick="togglePwd('reg-password')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--sub);">👁️</button>
+      </div>
+      <div style="position:relative;margin-bottom:10px;">
+        <input id="reg-confirm" type="password" placeholder="Confirmer le mot de passe *"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;padding-right:44px;font-size:14px;color:var(--text);font-family:inherit;outline:none;"/>
+        <button onclick="togglePwd('reg-confirm')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--sub);">👁️</button>
+      </div>
+      <div id="reg-error" style="color:#ff4444;font-size:12px;margin-bottom:10px;display:none;text-align:center;"></div>
+      <div id="reg-success" style="display:none;background:rgba(0,200,100,.1);border:1px solid rgba(0,200,100,.3);border-radius:12px;padding:12px;margin-bottom:10px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:6px;">📧</div>
+        <div style="font-size:13px;font-weight:700;color:#00cc88;margin-bottom:4px;">Compte créé avec succès !</div>
+        <div style="font-size:12px;color:var(--sub);">Vérifie ton email pour activer ton compte.</div>
+      </div>
+      <button onclick="doEmailRegister()" id="btn-email-register" class="big-btn"
+        style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%;margin-bottom:12px;">
+        Créer mon compte
+      </button>
+      <div class="auth-sep"><span>Ou continuer avec</span></div>
+      <button class="google-btn" onclick="doGoogleLogin()" id="google-register-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuer avec Google
+      </button>
+    </div>
+
+    <div class="modal-foot" style="margin-top:14px;">Session persistante — tu resteras connecté automatiquement</div>
+  </div>
+</div>
+
+<!-- 4 NIVEAUX -->
+<div class="modal-overlay" id="modal-subscribe" onclick="closeModalOnBg(event,'modal-subscribe')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-subscribe')"></div>
+    <div style="text-align:center;font-size:44px;margin-bottom:6px;">🎮</div>
+    <div class="modal-title" style="color:var(--accent);" id="txt-sub-modal-title">ABONNEMENTS</div>
+    <div class="modal-sub" id="txt-sub-modal-sub">Choisis ton niveau d'accès</div>
+    <div class="tier-card tier-noob" onclick="openPayment('noob')">
+      <div class="tier-badge">Niveau 1</div>
+      <div class="tier-name">🟢 NOOB</div>
+      <div class="tier-price">500 F<span style="font-size:13px;font-weight:400;opacity:.8;">/mois</span></div>
+      <div class="tier-desc">✅ Jeux PSP complets<br/>✅ Jeux PS2 complets</div>
+    </div>
+    <div class="tier-card tier-pro" onclick="openPayment('pro')">
+      <div class="tier-badge">Niveau 2</div>
+      <div class="tier-name">🔵 PRO</div>
+      <div class="tier-price">1 000 F<span style="font-size:13px;font-weight:400;opacity:.8;">/mois</span></div>
+      <div class="tier-desc">✅ Tout Noob inclus<br/>✅ Applications mobile premium<br/>✅ Jeux Nintendo Wii</div>
+    </div>
+    <div class="tier-card tier-elite" onclick="openPayment('elite')">
+      <div class="tier-badge">Niveau 3</div>
+      <div class="tier-name">🟣 ELITE</div>
+      <div class="tier-price">2 000 F<span style="font-size:13px;font-weight:400;opacity:.8;">/mois</span></div>
+      <div class="tier-desc">✅ Tout Pro inclus<br/>✅ PS Vita + PS3<br/>✅ Wii U + Switch<br/>✅ Tous les émulateurs</div>
+    </div>
+    <div class="tier-card tier-maitre" onclick="openPayment('maitre')">
+      <div class="tier-badge">⭐ Best</div>
+      <div class="tier-name">🏆 MAÎTRE</div>
+      <div class="tier-price">5 000 F<span style="font-size:13px;font-weight:400;opacity:.8;">/mois</span></div>
+      <div class="tier-desc">✅ TOUT débloqué — PSP, PS2, PS3, PSVita, Wii, Wii U, Switch, PC, Cloud, Apps Premium, Émulateurs<br/>🎁 Bonus cadeaux exclusifs !</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-noads" onclick="closeModalOnBg(event,'modal-noads')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-noads')"></div>
+    <div style="text-align:center;font-size:52px;margin-bottom:12px;">🚫</div>
+    <div class="modal-title" style="color:#ff6b00;">SANS PUBLICITÉS</div>
+    <div class="modal-sub">Profite de l'app sans aucune pub, pour toujours !</div>
+    <div class="price" style="color:#ff6b00;">5 000 F</div>
+    <div class="price-sub">Paiement unique — Définitif à vie</div>
+    <button class="big-btn" style="background:linear-gradient(135deg,#ff6b00,#ff3300);color:#fff;width:100%;margin-top:8px;" onclick="openPayment('noads')">💳 Payer maintenant</button>
+  </div>
+</div>
+
+<!-- MODAL PAIEMENT - 5 MÉTHODES -->
+<div class="modal-overlay" id="modal-payment" onclick="closeModalOnBg(event,'modal-payment')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-payment')"></div>
+    <div style="text-align:center;font-size:44px;margin-bottom:6px;">💳</div>
+    <div class="modal-title" style="color:var(--accent);">PAIEMENT</div>
+    <div class="modal-sub" id="pay-subtitle">Choisis ta méthode de paiement</div>
+
+    <!-- Résumé du paiement -->
+    <div id="purchase-game-info" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:24px;margin-bottom:6px;">🎮</div>
+      <div style="font-weight:700;font-size:13px;color:var(--text);margin-bottom:2px;">Jeu</div>
+      <div style="font-size:14px;color:var(--gold);font-weight:900;">0 F CFA</div>
+    </div>
+
+    <!-- 5 Méthodes de paiement -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+      
+      <!-- WAVE -->
+      <button onclick="selectPaymentMethod('wave')" style="background:linear-gradient(135deg,rgba(63,81,181,0.2),rgba(33,150,243,0.2));border:2px solid #3F51B5;border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-family:inherit;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">🔵</div>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:13px;">Wave Money</div>
+            <div style="font-size:11px;color:var(--sub);">Portefeuille mobile</div>
+          </div>
+        </div>
+      </button>
+
+      <!-- ORANGE -->
+      <button onclick="selectPaymentMethod('orange')" style="background:linear-gradient(135deg,rgba(255,102,0,0.2),rgba(255,140,0,0.2));border:2px solid #FF6600;border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-family:inherit;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">🟠</div>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:13px;">Orange Money</div>
+            <div style="font-size:11px;color:var(--sub);">Portefeuille Orange</div>
+          </div>
+        </div>
+      </button>
+
+      <!-- MTN -->
+      <button onclick="selectPaymentMethod('mtn')" style="background:linear-gradient(135deg,rgba(255,184,82,0.2),rgba(255,206,86,0.2));border:2px solid #FFB852;border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-family:inherit;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">🟡</div>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:13px;">MTN Mobile Money</div>
+            <div style="font-size:11px;color:var(--sub);">Portefeuille MTN</div>
+          </div>
+        </div>
+      </button>
+
+      <!-- MOOV -->
+      <button onclick="selectPaymentMethod('moov')" style="background:linear-gradient(135deg,rgba(244,67,54,0.2),rgba(229,57,53,0.2));border:2px solid #F44336;border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-family:inherit;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">🔴</div>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:13px;">Moov Africa Money</div>
+            <div style="font-size:11px;color:var(--sub);">Portefeuille Moov</div>
+          </div>
+        </div>
+      </button>
+
+      <!-- VISA -->
+      <button onclick="selectPaymentMethod('visa')" style="background:linear-gradient(135deg,rgba(1,97,198,0.2),rgba(21,128,244,0.2));border:2px solid #1565C0;border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-family:inherit;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="font-size:24px;">💳</div>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:13px;">Carte Visa/Mastercard</div>
+            <div style="font-size:11px;color:var(--sub);">Carte bancaire</div>
+          </div>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- Formulaire dynamique selon la méthode -->
+    <div id="payment-form" style="display:none;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;"></div>
+
+    <!-- Bouton de paiement -->
+    <button id="pay-btn" class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%;padding:14px;display:none;" onclick="processPay()">💸 Payer</button>
+
+    <!-- Info -->
+    <div style="font-size:11px;color:var(--sub);text-align:center;margin-top:10px;line-height:1.5;">
+      ⚠️ Ceci est une démo. Pour activer les vrais paiements, les APIs officielles seront intégrées après approbation.
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADMIN (accès secret) -->
+<div class="modal-overlay" id="modal-admin" onclick="closeModalOnBg(event,'modal-admin')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-admin')"></div>
+    <div class="modal-title" style="color:#ff4444;">🔐 ADMIN PANEL</div>
+    <div id="admin-content" style="max-height:60vh;overflow-y:auto;"></div>
+    <button onclick="loadAdminPayments()" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;color:var(--text);margin-top:10px;">🔄 Actualiser</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-download" onclick="closeModalOnBg(event,'modal-download')">
+  <div class="modal-sheet" style="padding:0;overflow:hidden;border-radius:24px 24px 0 0;">
+    <!-- Cover image header -->
+    <div id="dl-cover-wrap" style="position:relative;width:100%;height:220px;background:var(--bg2);overflow:hidden;">
+      <img id="dl-cover" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1),rgba(0,0,0,0.7));"></div>
+      <div class="modal-handle" onclick="closeModal('modal-download')" style="position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.3);"></div>
+      <!-- Platform badge -->
+      <div id="dl-platform-badge" style="position:absolute;top:28px;left:16px;border-radius:10px;padding:4px 10px;font-size:11px;font-weight:700;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.2);color:#fff;"></div>
+      <!-- Rating -->
+      <div id="dl-rating-badge" style="position:absolute;top:28px;right:16px;border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;background:rgba(0,0,0,0.5);color:#f5c842;"></div>
+      <!-- Title over image -->
+      <div id="dl-title" style="position:absolute;bottom:14px;left:16px;right:16px;font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.8);"></div>
+    </div>
+
+    <!-- Content -->
+    <div style="padding:18px 18px 100px;overflow-y:auto;max-height:65vh;">
+      <!-- Size + Download button row -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+        <div id="dl-size" style="font-size:13px;color:var(--sub);font-weight:600;"></div>
+        <button class="big-btn" id="dl-main-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;flex:1;padding:13px;" onclick="confirmDownload()">⬇️ Télécharger</button>
+      </div>
+
+      <!-- Description -->
+      <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:8px;">DESCRIPTION</div>
+      <div id="dl-desc" style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:20px;"></div>
+
+      <!-- Screenshots -->
+      <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">SCREENSHOTS</div>
+      <div id="dl-screenshots" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;margin-bottom:20px;"></div>
+
+      <!-- YouTube Video -->
+      <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">GAMEPLAY</div>
+      <div id="dl-youtube" style="margin-bottom:20px;position:relative;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-settings" onclick="closeModalOnBg(event,'modal-settings')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-settings')"></div>
+    <div class="modal-title" style="color:var(--accent);" id="txt-settings-title">⚙️ PARAMÈTRES</div>
+    <div class="setting-row">
+      <div><div class="setting-lbl" id="txt-display-lbl">Mode d'affichage</div><div class="setting-sub" id="theme-sub">Auto 🔄</div></div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="setThemeMode('auto')" id="btn-auto" style="border-radius:10px;padding:5px 9px;border:2px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">Auto</button>
+        <button onclick="setThemeMode('light')" id="btn-light" style="border-radius:10px;padding:5px 9px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">☀️</button>
+        <button onclick="setThemeMode('dark')" id="btn-dark" style="border-radius:10px;padding:5px 9px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">🌙</button>
+      </div>
+    </div>
+    <!-- LANGUE - bouton qui ouvre le modal -->
+    <div class="setting-row" style="cursor:pointer;" onclick="openModal('modal-lang')">
+      <div><div class="setting-lbl" id="txt-lang-lbl">Langue / Language</div><div class="setting-sub" id="lang-sub-display">Français</div></div>
+      <div style="color:var(--accent);font-size:20px;">›</div>
+    </div>
+
+    <div class="setting-row" style="border:none;">
+      <div><div class="setting-lbl" id="txt-noads-setting-lbl">Sans publicités</div><div class="setting-sub" id="noads-setting-sub">5 000 F unique</div></div>
+      <div id="noads-setting-val" onclick="handleNoAdsClick()" style="font-weight:700;font-size:12px;color:#ff6b00;cursor:pointer;">Acheter</div>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:11px;color:var(--sub);">Lv-UP STORE v1.0 — GAME Lv-UP © 2025-2026</div>
+  </div>
+</div>
+
+<!-- ─── MODAL LANGUE ─── -->
+<div class="modal-overlay" id="modal-lang" onclick="closeModalOnBg(event,'modal-lang')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-lang')"></div>
+    <div class="modal-title" style="color:var(--accent);" id="txt-lang-modal-title">🌐 Langue / Language</div>
+    <div id="lang-list"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-edit" onclick="closeModalOnBg(event,'modal-edit')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-edit')"></div>
+    <div class="modal-title" style="color:var(--accent);" id="txt-edit-modal-title">✏️ MODIFIER LE PROFIL</div>
+    <div id="av-preview" style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 10px;border:3px solid var(--accent);cursor:pointer;" onclick="document.getElementById('photo-input').click()">👤</div>
+    <input type="file" id="photo-input" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;">
+      <button id="txt-edit-photo" onclick="document.getElementById('photo-input').click()" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">📷 Photo</button>
+      <button id="remove-photo-btn" onclick="removeEditPhoto()" style="display:none;background:rgba(255,68,68,.15);color:#ff4444;border:1px solid rgba(255,68,68,.3);border-radius:12px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;"><span id="txt-edit-remove">🗑️ Retirer</span></button>
+    </div>
+    <div style="font-size:11px;color:var(--sub);margin-bottom:8px;letter-spacing:1px;font-weight:600;" id="txt-edit-display-name">NOM D'AFFICHAGE</div>
+    <input class="edit-input" id="edit-name" maxlength="30" placeholder="Ton pseudo..." oninput="document.getElementById('char-count').textContent=this.value.length+'/30'"/>
+    <div class="char-count" id="char-count">0/30</div>
+    <button class="big-btn" id="txt-edit-save" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%;" onclick="saveProfile()">✅ Sauvegarder</button>
+  </div>
+</div>
+
+<!-- MODAL COMPLÉTER PROFIL (post-Google) -->
+<div class="modal-overlay" id="modal-complete">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;font-size:44px;margin-bottom:8px;">👤</div>
+    <div class="modal-title" style="color:var(--accent);" id="txt-complete-title">Compléter mon profil</div>
+    <div class="modal-sub" id="txt-complete-sub">Quelques infos pour finaliser ton compte</div>
+    <input id="cp-firstname" type="text" placeholder="Prénom *" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+    <input id="cp-lastname" type="text" placeholder="Nom *" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+    <input id="cp-phone" type="tel" placeholder="Numéro de téléphone *" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+    <select id="cp-country" class="country-select">
+      <option value="">Sélectionne ton pays *</option>
+    </select>
+    <div id="cp-error" style="color:#ff4444;font-size:12px;margin-bottom:10px;display:none;text-align:center;"></div>
+    <button onclick="saveCompleteProfile()" id="btn-complete" class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;width:100%;">✅ Enregistrer</button>
+  </div>
+</div>
+
+<!-- MODAL LOGOUT -->
+<div class="modal-overlay" id="modal-logout" onclick="closeModalOnBg(event,'modal-logout')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-logout')"></div>
+    <div style="text-align:center;font-size:52px;margin-bottom:12px;">🚪</div>
+    <div class="modal-title" style="color:#ff6666;" id="txt-logout-title">DÉCONNEXION</div>
+    <div class="modal-sub" id="txt-logout-sub">Tu vas te déconnecter de ton compte Lv-UP STORE.</div>
+    <div style="display:flex;gap:10px;">
+      <button id="txt-logout-cancel" style="flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;" onclick="closeModal('modal-logout')">Annuler</button>
+      <button style="flex:1;background:linear-gradient(135deg,#ff6666,#cc3333);color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;" onclick="doLogout()">🚪 Déconnecter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DELETE -->
+<div class="modal-overlay" id="modal-delete" onclick="closeModalOnBg(event,'modal-delete')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-delete')"></div>
+    <div style="text-align:center;font-size:52px;margin-bottom:12px;">⚠️</div>
+    <div class="modal-title" style="color:#ff2222;" id="txt-delete-title">SUPPRIMER LE COMPTE</div>
+    <div class="modal-sub" id="txt-delete-sub">Cette action est <strong style="color:#ff4444;">irréversible</strong>. Ton compte sera définitivement supprimé.</div>
+    <div style="background:rgba(255,34,34,.08);border:1px solid #ff222244;border-radius:14px;padding:12px;margin-bottom:20px;font-size:12px;color:#ff6666;text-align:center;">⚠️ Toutes tes données seront effacées.<br/>Tu pourras te réinscrire avec le même email, mais ton compte sera vierge.</div>
+    <div style="display:flex;gap:10px;">
+      <button style="flex:1;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;" onclick="closeModal('modal-delete')">Annuler</button>
+      <button style="flex:1;background:linear-gradient(135deg,#ff2222,#cc0000);color:#fff;border:none;border-radius:14px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;" onclick="doDelete()">🗑️ Supprimer</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL ACHAT JEU -->
+<div class="modal-overlay" id="modal-purchase" onclick="closeModalOnBg(event,'modal-purchase')">
+  <div class="modal-sheet">
+    <div class="modal-handle" onclick="closeModal('modal-purchase')"></div>
+    <div class="modal-title" style="color:var(--gold);">🛒 ACHETER CE JEU</div>
+    <div id="purchase-game-info" style="text-align:center;padding:16px 0;border:1px solid var(--border);border-radius:16px;margin-bottom:20px;background:var(--card);"></div>
+    <div class="wave-box" style="margin-bottom:16px;">
+      <div class="wave-title">💳 Paiement Wave</div>
+      <div class="wave-notice">Clique sur Payer pour finaliser ton achat via Wave Mobile Money.</div>
+    </div>
+    <button onclick="doPurchase()" style="width:100%;background:linear-gradient(135deg,#00aaff,#0057ff);color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:16px;cursor:pointer;font-family:inherit;margin-bottom:10px;">
+      💳 Payer avec Wave
+    </button>
+    <button onclick="closeModal('modal-purchase')" style="width:100%;background:var(--card);color:var(--sub);border:1px solid var(--border);border-radius:14px;padding:13px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;">
+      Annuler
+    </button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// PAYS AFRIQUE DE L'OUEST + MONDE
+// ══════════════════════════════════════════
+const COUNTRIES=[
+  {code:'CI',name:'🇨🇮 Côte d\'Ivoire'},{code:'SN',name:'🇸🇳 Sénégal'},
+  {code:'ML',name:'🇲🇱 Mali'},{code:'BF',name:'🇧🇫 Burkina Faso'},
+  {code:'GN',name:'🇬🇳 Guinée'},{code:'NE',name:'🇳🇪 Niger'},
+  {code:'TG',name:'🇹🇬 Togo'},{code:'BJ',name:'🇧🇯 Bénin'},
+  {code:'MR',name:'🇲🇷 Mauritanie'},{code:'GW',name:'🇬🇼 Guinée-Bissau'},
+  {code:'GM',name:'🇬🇲 Gambie'},{code:'SL',name:'🇸🇱 Sierra Leone'},
+  {code:'LR',name:'🇱🇷 Liberia'},{code:'GH',name:'🇬🇭 Ghana'},
+  {code:'NG',name:'🇳🇬 Nigeria'},{code:'CM',name:'🇨🇲 Cameroun'},
+  {code:'CG',name:'🇨🇬 Congo'},{code:'CD',name:'🇨🇩 RD Congo'},
+  {code:'GA',name:'🇬🇦 Gabon'},{code:'CV',name:'🇨🇻 Cap-Vert'},
+];
+
+// ══════════════════════════════════════════
+// LANGUES COMPLÈTES (toutes langues Median)
+// ══════════════════════════════════════════
+const LANG_LIST=[
+  {code:'fr',flag:'🇫🇷',name:'Français'},
+  {code:'en',flag:'🇬🇧',name:'English'},
+  {code:'ar',flag:'🇸🇦',name:'العربية'},
+  {code:'pt',flag:'🇧🇷',name:'Português (Brasil)'},
+  {code:'ptpt',flag:'🇵🇹',name:'Português (Portugal)'},
+  {code:'es',flag:'🇪🇸',name:'Español'},
+  {code:'esla',flag:'🌎',name:'Español (Latinoamérica)'},
+  {code:'de',flag:'🇩🇪',name:'Deutsch'},
+  {code:'it',flag:'🇮🇹',name:'Italiano'},
+  {code:'nl',flag:'🇳🇱',name:'Nederlands'},
+  {code:'tr',flag:'🇹🇷',name:'Türkçe'},
+  {code:'ru',flag:'🇷🇺',name:'Русский'},
+];
+
+const LANGS={
+  fr:{
+    nav_home:'Accueil',nav_games:'Jeux',nav_dl:'Téléch.',nav_lib:'Biblio',
+    connect:'Connexion',login_title:'Se connecter',register_title:'Créer un compte',
+    tab_login:'Connexion',tab_register:'Inscription',
+    email:'Adresse email',password:'Mot de passe',
+    firstname:'Prénom',lastname:'Nom de famille',phone:'Numéro de téléphone',
+    country:'Pays',confirm_pwd:'Confirmer le mot de passe',
+    forgot_pwd:'Mot de passe oublié ?',or_with:'Ou continuer avec',
+    create_account:'Créer mon compte',
+    my_account:'Mon Compte',edit_profile:'Modifier le profil',
+    subscription:'Abonnement',no_ads:'Sans publicités',
+    settings:'Paramètres',logout:'Déconnexion',delete_acc:'Supprimer le compte',
+    display_mode:'Mode d\'affichage',language:'Langue',
+    search:'Rechercher...',see_all:'Voir tout →',
+    featured:'🔥 Jeux Vedettes',platforms:'🎮 Plateformes',
+    download:'⬇️ Télécharger',get_btn:'⬇️ Get',follow_us:'NOUS SUIVRE',
+    sub_noob_title:'Accès Noob 🟢',sub_pro_title:'Accès Pro 🔵',
+    sub_elite_title:'Accès Elite 🟣',sub_maitre_title:'Accès Maître 🏆',
+    active:'ACTIF',buy:'Acheter',save:'✅ Sauvegarder',
+    photo:'📷 Photo',remove_photo:'🗑️ Retirer',display_name:'NOM D\'AFFICHAGE',
+    select_country:'Sélectionne ton pays *',
+    complete_title:'Compléter mon profil',complete_sub:'Quelques infos pour finaliser ton compte',
+    cancel:'Annuler',disconnect:'🚪 Déconnecter',
+    wave_coming:'Wave — Bientôt disponible',
+    wave_notice:'L\'intégration Wave est en cours.<br/>Contacte-nous sur WhatsApp pour payer manuellement.',
+    contact_wa:'💬 Contacter sur WhatsApp',
+    lib_login:'Connecte-toi pour accéder à ta bibliothèque',
+    lib_subscribe:'Abonne-toi pour télécharger',
+    dl_empty:'Aucun téléchargement pour l\'instant.',lib_title:'Ma Bibliothèque',lib_empty:'Aucun favori pour l\'instant',lib_hint:'Clique ⭐ sur un jeu pour l\'ajouter',lib_browse:'Parcourir les jeux',
+    description:'DESCRIPTION',screenshots:'SCREENSHOTS',infos:'INFOS',
+    platform_lbl:'Plateforme',size_lbl:'Taille',rating_lbl:'Note',status_lbl:'Statut',available:'Disponible',
+    confirm_logout:'Tu vas te déconnecter de ton compte Lv-UP STORE.',
+    err_fields:'Remplis tous les champs !',
+    err_pwd_short:'Mot de passe trop court (min. 6 caractères)',
+    err_pwd_match:'Les mots de passe ne correspondent pas',
+    err_email_taken:'Cet email est déjà utilisé ❌',
+    err_wrong_pwd:'Email ou mot de passe incorrect ❌',
+    delete_title:'SUPPRIMER LE COMPTE',delete_sub:'Cette action est irréversible.',
+    logout_title:'DÉCONNEXION',
+    account_connected:'✅ Compte connecté',
+    sub_levels:'Voir les offres',
+    choose_level:'Choisis ton niveau d\'accès',
+    sub_title:'ABONNEMENTS',
+    locked:'🔒 Nécessite un abonnement',
+    need_sub:'Abonne-toi pour accéder à ce contenu',
+    tier_noob_feats:'✅ Jeux PSP complets\n✅ Jeux PS2 complets',
+    tier_pro_feats:'✅ Tout Noob inclus\n✅ Applications mobile premium\n✅ Jeux Nintendo Wii',
+    tier_elite_feats:'✅ Tout Pro inclus\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Tous les émulateurs',
+    tier_maitre_feats:'✅ TOUT débloqué\n🎁 Bonus cadeaux exclusifs !',
+    filter_all:'Tous',no_results:'Aucun résultat',
+    ads_remove_title:'Supprimer les pubs',ads_remove_sub:'Paiement unique • 5 000 F',ads_activate:'Activer',
+    download_started:'⬇️ Téléchargement lancé !',
+    noads_price:'Paiement unique • 5 000 F',rights_reserved:'Tous droits réservés',
+    link_home:'Accueil',link_privacy:'Confidentialité',link_terms:'Conditions',
+  },
+  en:{
+    nav_home:'Home',nav_games:'Games',nav_dl:'Downloads',nav_lib:'Library',
+    connect:'Login',login_title:'Sign in',register_title:'Create account',
+    tab_login:'Login',tab_register:'Register',
+    email:'Email address',password:'Password',
+    firstname:'First name',lastname:'Last name',phone:'Phone number',
+    country:'Country',confirm_pwd:'Confirm password',
+    forgot_pwd:'Forgot password?',or_with:'Or continue with',
+    create_account:'Create account',
+    my_account:'My Account',edit_profile:'Edit profile',
+    subscription:'Subscription',no_ads:'No ads',
+    settings:'Settings',logout:'Logout',delete_acc:'Delete account',
+    display_mode:'Display mode',language:'Language',
+    search:'Search...',see_all:'See all →',
+    featured:'🔥 Featured Games',platforms:'🎮 Platforms',
+    download:'⬇️ Download',get_btn:'⬇️ Get',follow_us:'FOLLOW US',
+    sub_noob_title:'Noob Access 🟢',sub_pro_title:'Pro Access 🔵',
+    sub_elite_title:'Elite Access 🟣',sub_maitre_title:'Master Access 🏆',
+    active:'ACTIVE',buy:'Buy',save:'✅ Save',
+    photo:'📷 Photo',remove_photo:'🗑️ Remove',display_name:'DISPLAY NAME',
+    select_country:'Select your country *',
+    complete_title:'Complete my profile',complete_sub:'A few details to finalize your account',
+    cancel:'Cancel',disconnect:'🚪 Disconnect',
+    wave_coming:'Wave — Coming soon',
+    wave_notice:'Wave integration is in progress.<br/>Contact us on WhatsApp to pay manually.',
+    contact_wa:'💬 Contact on WhatsApp',
+    lib_login:'Log in to access your library',
+    lib_subscribe:'Subscribe to download',
+    dl_empty:'No downloads yet.',lib_title:'My Library',lib_empty:'No favorites yet',lib_hint:'Tap ⭐ on a game to add it',lib_browse:'Browse games',
+    description:'DESCRIPTION',screenshots:'SCREENSHOTS',infos:'INFO',
+    platform_lbl:'Platform',size_lbl:'Size',rating_lbl:'Rating',status_lbl:'Status',available:'Available',
+    confirm_logout:'You will be logged out of your Lv-UP STORE account.',
+    err_fields:'Please fill all fields!',
+    err_pwd_short:'Password too short (min. 6 characters)',
+    err_pwd_match:'Passwords do not match',
+    err_email_taken:'This email is already in use ❌',
+    err_wrong_pwd:'Incorrect email or password ❌',
+    delete_title:'DELETE ACCOUNT',delete_sub:'This action is irreversible.',
+    logout_title:'LOGOUT',
+    account_connected:'✅ Account connected',
+    sub_levels:'View plans',
+    choose_level:'Choose your access level',
+    sub_title:'SUBSCRIPTIONS',
+    locked:'🔒 Requires subscription',
+    need_sub:'Subscribe to access this content',
+    tier_noob_feats:'✅ All PSP games\n✅ All PS2 games',
+    tier_pro_feats:'✅ All Noob included\n✅ Premium mobile apps\n✅ Nintendo Wii games',
+    tier_elite_feats:'✅ All Pro included\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ All emulators',
+    tier_maitre_feats:'✅ EVERYTHING unlocked\n🎁 Exclusive bonus gifts!',
+    filter_all:'All',no_results:'No results',
+    ads_remove_title:'Remove ads',ads_remove_sub:'One-time payment • 5,000 F',ads_activate:'Activate',
+    download_started:'⬇️ Download started!',
+    noads_price:'One-time payment • 5,000 F',rights_reserved:'All rights reserved',
+    link_home:'Home',link_privacy:'Privacy',link_terms:'Terms',
+  },
+  ar:{
+    nav_home:'الرئيسية',nav_games:'ألعاب',nav_dl:'تحميل',nav_lib:'مكتبة',
+    connect:'دخول',login_title:'تسجيل الدخول',register_title:'إنشاء حساب',
+    tab_login:'دخول',tab_register:'تسجيل',
+    email:'البريد الإلكتروني',password:'كلمة المرور',
+    firstname:'الاسم الأول',lastname:'اسم العائلة',phone:'رقم الهاتف',
+    country:'البلد',confirm_pwd:'تأكيد كلمة المرور',
+    forgot_pwd:'نسيت كلمة المرور؟',or_with:'أو تابع مع',
+    create_account:'إنشاء حساب',
+    my_account:'حسابي',edit_profile:'تعديل الملف',
+    subscription:'الاشتراك',no_ads:'بدون إعلانات',
+    settings:'الإعدادات',logout:'خروج',delete_acc:'حذف الحساب',
+    display_mode:'وضع العرض',language:'اللغة',
+    search:'بحث...',see_all:'عرض الكل →',
+    featured:'🔥 الألعاب المميزة',platforms:'🎮 المنصات',
+    download:'⬇️ تحميل',get_btn:'⬇️ احصل',follow_us:'تابعنا',
+    active:'نشط',buy:'شراء',save:'✅ حفظ',
+    photo:'📷 صورة',remove_photo:'🗑️ إزالة',display_name:'اسم العرض',
+    select_country:'اختر بلدك *',
+    complete_title:'إكمال ملفي',complete_sub:'تفاصيل لإنهاء حسابك',
+    cancel:'إلغاء',disconnect:'🚪 خروج',
+    wave_coming:'Wave — قريباً',wave_notice:'التكامل قيد الإعداد.<br/>تواصل معنا عبر واتساب.',
+    contact_wa:'💬 واتساب',
+    lib_login:'سجل الدخول للوصول',lib_subscribe:'اشترك للتحميل',
+    dl_empty:'لا تحميلات بعد.',lib_title:'مكتبتي',lib_empty:'لا مفضلات بعد',lib_hint:'اضغط ⭐ على لعبة لإضافتها',lib_browse:'تصفح الألعاب',
+    description:'الوصف',screenshots:'لقطات',infos:'معلومات',
+    platform_lbl:'المنصة',size_lbl:'الحجم',rating_lbl:'التقييم',status_lbl:'الحالة',available:'متاح',
+    confirm_logout:'ستتم إزالتك من حساب Lv-UP STORE.',
+    err_fields:'يرجى ملء جميع الحقول!',err_pwd_short:'كلمة المرور قصيرة جداً',err_pwd_match:'كلمتا المرور غير متطابقتين',
+    err_email_taken:'هذا البريد مستخدم ❌',err_wrong_pwd:'بريد أو كلمة مرور غير صحيحة ❌',
+    delete_title:'حذف الحساب',delete_sub:'هذا الإجراء لا يمكن التراجع عنه.',
+    logout_title:'تسجيل الخروج',account_connected:'✅ حساب متصل',
+    sub_levels:'عرض الخطط',choose_level:'اختر مستوى وصولك',sub_title:'الاشتراكات',
+    locked:'🔒 يتطلب اشتراكاً',need_sub:'اشترك للوصول',
+    tier_noob_feats:'✅ ألعاب PSP\n✅ ألعاب PS2',
+    tier_pro_feats:'✅ كل Noob\n✅ تطبيقات مدفوعة\n✅ Wii',
+    tier_elite_feats:'✅ كل Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ المحاكيات',
+    tier_maitre_feats:'✅ كل شيء\n🎁 هدايا حصرية!',
+    filter_all:'الكل',no_results:'لا نتائج',
+    ads_remove_title:'إزالة الإعلانات',ads_remove_sub:'دفعة واحدة • 5,000 F',ads_activate:'تفعيل',
+    download_started:'⬇️ بدأ التحميل!',
+    noads_price:'دفعة واحدة • 5,000 F',rights_reserved:'جميع الحقوق محفوظة',
+    link_home:'الرئيسية',link_privacy:'الخصوصية',link_terms:'الشروط',
+  },
+  pt:{
+    nav_home:'Início',nav_games:'Jogos',nav_dl:'Downloads',nav_lib:'Biblioteca',
+    connect:'Entrar',login_title:'Entrar',register_title:'Criar conta',
+    tab_login:'Entrar',tab_register:'Cadastrar',
+    email:'E-mail',password:'Senha',
+    firstname:'Nome',lastname:'Sobrenome',phone:'Telefone',
+    country:'País',confirm_pwd:'Confirmar senha',
+    forgot_pwd:'Esqueceu a senha?',or_with:'Ou continuar com',
+    create_account:'Criar conta',
+    my_account:'Minha Conta',edit_profile:'Editar perfil',
+    subscription:'Assinatura',no_ads:'Sem anúncios',
+    settings:'Configurações',logout:'Sair',delete_acc:'Excluir conta',
+    display_mode:'Modo de exibição',language:'Idioma',
+    search:'Pesquisar...',see_all:'Ver tudo →',
+    featured:'🔥 Jogos em Destaque',platforms:'🎮 Plataformas',
+    download:'⬇️ Baixar',get_btn:'⬇️ Get',follow_us:'SIGA-NOS',
+    active:'ATIVO',buy:'Comprar',save:'✅ Salvar',
+    photo:'📷 Foto',remove_photo:'🗑️ Remover',display_name:'NOME DE EXIBIÇÃO',
+    select_country:'Selecione seu país *',
+    complete_title:'Completar perfil',complete_sub:'Detalhes para finalizar sua conta',
+    cancel:'Cancelar',disconnect:'🚪 Sair',
+    wave_coming:'Wave — Em breve',wave_notice:'Integração em andamento.<br/>Contate-nos no WhatsApp.',
+    contact_wa:'💬 WhatsApp',lib_login:'Entre para acessar',lib_subscribe:'Assine para baixar',
+    dl_empty:'Nenhum download ainda.',lib_title:'Minha Biblioteca',lib_empty:'Nenhum favorito ainda',lib_hint:'Toque ⭐ num jogo',lib_browse:'Ver jogos',
+    description:'DESCRIÇÃO',screenshots:'CAPTURAS',infos:'INFO',
+    platform_lbl:'Plataforma',size_lbl:'Tamanho',rating_lbl:'Nota',status_lbl:'Status',available:'Disponível',
+    confirm_logout:'Você será desconectado.',err_fields:'Preencha todos os campos!',
+    err_pwd_short:'Senha muito curta',err_pwd_match:'As senhas não coincidem',
+    err_email_taken:'E-mail já em uso ❌',err_wrong_pwd:'E-mail ou senha incorretos ❌',
+    delete_title:'EXCLUIR CONTA',delete_sub:'Esta ação é irreversível.',
+    logout_title:'SAIR',account_connected:'✅ Conta conectada',
+    sub_levels:'Ver planos',choose_level:'Escolha seu nível',sub_title:'ASSINATURAS',
+    locked:'🔒 Requer assinatura',need_sub:'Assine para acessar',
+    tier_noob_feats:'✅ Jogos PSP\n✅ Jogos PS2',
+    tier_pro_feats:'✅ Tudo Noob\n✅ Apps premium\n✅ Wii',
+    tier_elite_feats:'✅ Tudo Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emuladores',
+    tier_maitre_feats:'✅ TUDO desbloqueado\n🎁 Brindes exclusivos!',
+    filter_all:'Todos',no_results:'Sem resultados',
+    ads_remove_title:'Remover anúncios',ads_remove_sub:'Pagamento único • 5.000 F',ads_activate:'Ativar',
+    download_started:'⬇️ Download iniciado!',
+    noads_price:'Pagamento único • 5.000 F',rights_reserved:'Todos os direitos reservados',
+    link_home:'Início',link_privacy:'Privacidade',link_terms:'Termos',
+    noads_price:'Pagamento único • 5.000 F',rights_reserved:'Todos os direitos reservados',
+    link_home:'Início',link_privacy:'Privacidade',link_terms:'Termos',
+  },
+  ptpt:{
+    nav_home:'Início',nav_games:'Jogos',nav_dl:'Transferências',nav_lib:'Biblioteca',
+    connect:'Entrar',login_title:'Iniciar sessão',register_title:'Criar conta',
+    tab_login:'Entrar',tab_register:'Registar',
+    email:'E-mail',password:'Palavra-passe',
+    firstname:'Nome',lastname:'Apelido',phone:'Telefone',
+    country:'País',confirm_pwd:'Confirmar palavra-passe',
+    forgot_pwd:'Esqueceu a palavra-passe?',or_with:'Ou continuar com',
+    create_account:'Criar conta',
+    my_account:'A Minha Conta',edit_profile:'Editar perfil',
+    subscription:'Subscrição',no_ads:'Sem anúncios',
+    settings:'Definições',logout:'Sair',delete_acc:'Eliminar conta',
+    display_mode:'Modo de ecrã',language:'Idioma',
+    search:'Pesquisar...',see_all:'Ver tudo →',
+    featured:'🔥 Jogos em Destaque',platforms:'🎮 Plataformas',
+    download:'⬇️ Transferir',get_btn:'⬇️ Get',follow_us:'SEGUE-NOS',
+    active:'ATIVO',buy:'Comprar',save:'✅ Guardar',
+    photo:'📷 Foto',remove_photo:'🗑️ Remover',display_name:'NOME DE EXIBIÇÃO',
+    select_country:'Seleciona o teu país *',
+    complete_title:'Completar perfil',complete_sub:'Detalhes para finalizar a conta',
+    cancel:'Cancelar',disconnect:'🚪 Sair',
+    wave_coming:'Wave — Em breve',wave_notice:'Integração em curso.',
+    contact_wa:'💬 WhatsApp',lib_login:'Inicia sessão para aceder',lib_subscribe:'Subscreve para descarregar',
+    dl_empty:'Sem transferências ainda.',lib_title:'A Minha Biblioteca',lib_empty:'Sem favoritos ainda',lib_hint:'Toca ⭐ num jogo',lib_browse:'Ver jogos',
+    description:'DESCRIÇÃO',screenshots:'CAPTURAS',infos:'INFO',
+    platform_lbl:'Plataforma',size_lbl:'Tamanho',rating_lbl:'Avaliação',status_lbl:'Estado',available:'Disponível',
+    confirm_logout:'Vais terminar sessão.',err_fields:'Preenche todos os campos!',
+    err_pwd_short:'Palavra-passe demasiado curta',err_pwd_match:'As palavras-passe não coincidem',
+    err_email_taken:'E-mail já em uso ❌',err_wrong_pwd:'E-mail ou palavra-passe incorretos ❌',
+    delete_title:'ELIMINAR CONTA',delete_sub:'Esta ação é irreversível.',
+    logout_title:'SAIR',account_connected:'✅ Conta ligada',
+    sub_levels:'Ver planos',choose_level:'Escolhe o teu nível',sub_title:'SUBSCRIÇÕES',
+    locked:'🔒 Requer subscrição',need_sub:'Subscreve para aceder',
+    tier_noob_feats:'✅ Jogos PSP\n✅ Jogos PS2',
+    tier_pro_feats:'✅ Tudo Noob\n✅ Apps premium\n✅ Wii',
+    tier_elite_feats:'✅ Tudo Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emuladores',
+    tier_maitre_feats:'✅ TUDO desbloqueado\n🎁 Presentes exclusivos!',
+    filter_all:'Todos',no_results:'Sem resultados',
+    ads_remove_title:'Remover anúncios',ads_remove_sub:'Pagamento único • 5.000 F',ads_activate:'Ativar',
+    download_started:'⬇️ Download iniciado!',
+    noads_price:'Pagamento único • 5.000 F',rights_reserved:'Todos os direitos reservados',
+    link_home:'Início',link_privacy:'Privacidade',link_terms:'Termos',
+    noads_price:'Pagamento único • 5.000 F',rights_reserved:'Todos os direitos reservados',
+    link_home:'Início',link_privacy:'Privacidade',link_terms:'Termos',
+  },
+  es:{
+    nav_home:'Inicio',nav_games:'Juegos',nav_dl:'Descargas',nav_lib:'Biblioteca',
+    connect:'Entrar',login_title:'Iniciar sesión',register_title:'Crear cuenta',
+    tab_login:'Entrar',tab_register:'Registrarse',
+    email:'Correo electrónico',password:'Contraseña',
+    firstname:'Nombre',lastname:'Apellido',phone:'Teléfono',
+    country:'País',confirm_pwd:'Confirmar contraseña',
+    forgot_pwd:'¿Olvidaste tu contraseña?',or_with:'O continuar con',
+    create_account:'Crear cuenta',
+    my_account:'Mi Cuenta',edit_profile:'Editar perfil',
+    subscription:'Suscripción',no_ads:'Sin anuncios',
+    settings:'Ajustes',logout:'Cerrar sesión',delete_acc:'Eliminar cuenta',
+    display_mode:'Modo de pantalla',language:'Idioma',
+    search:'Buscar...',see_all:'Ver todo →',
+    featured:'🔥 Juegos Destacados',platforms:'🎮 Plataformas',
+    download:'⬇️ Descargar',get_btn:'⬇️ Get',follow_us:'SÍGUENOS',
+    active:'ACTIVO',buy:'Comprar',save:'✅ Guardar',
+    photo:'📷 Foto',remove_photo:'🗑️ Quitar',display_name:'NOMBRE DE PANTALLA',
+    select_country:'Selecciona tu país *',
+    complete_title:'Completar perfil',complete_sub:'Detalles para finalizar tu cuenta',
+    cancel:'Cancelar',disconnect:'🚪 Cerrar sesión',
+    wave_coming:'Wave — Próximamente',wave_notice:'Integración en progreso.',
+    contact_wa:'💬 WhatsApp',lib_login:'Inicia sesión para acceder',lib_subscribe:'Suscríbete para descargar',
+    dl_empty:'Sin descargas aún.',lib_title:'Mi Biblioteca',lib_empty:'Sin favoritos aún',lib_hint:'Toca ⭐ en un juego',lib_browse:'Ver juegos',
+    description:'DESCRIPCIÓN',screenshots:'CAPTURAS',infos:'INFO',
+    platform_lbl:'Plataforma',size_lbl:'Tamaño',rating_lbl:'Nota',status_lbl:'Estado',available:'Disponible',
+    confirm_logout:'Cerrarás sesión en tu cuenta.',err_fields:'¡Rellena todos los campos!',
+    err_pwd_short:'Contraseña muy corta',err_pwd_match:'Las contraseñas no coinciden',
+    err_email_taken:'Este email ya está en uso ❌',err_wrong_pwd:'Email o contraseña incorrectos ❌',
+    delete_title:'ELIMINAR CUENTA',delete_sub:'Esta acción es irreversible.',
+    logout_title:'CERRAR SESIÓN',account_connected:'✅ Cuenta conectada',
+    sub_levels:'Ver planes',choose_level:'Elige tu nivel de acceso',sub_title:'SUSCRIPCIONES',
+    locked:'🔒 Requiere suscripción',need_sub:'Suscríbete para acceder',
+    tier_noob_feats:'✅ Juegos PSP\n✅ Juegos PS2',
+    tier_pro_feats:'✅ Todo Noob\n✅ Apps premium\n✅ Wii',
+    tier_elite_feats:'✅ Todo Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emuladores',
+    tier_maitre_feats:'✅ TODO desbloqueado\n🎁 ¡Regalos exclusivos!',
+    filter_all:'Todos',no_results:'Sin resultados',
+    ads_remove_title:'Quitar anuncios',ads_remove_sub:'Pago único • 5.000 F',ads_activate:'Activar',
+    download_started:'⬇️ ¡Descarga iniciada!',
+    noads_price:'Pago único • 5.000 F',rights_reserved:'Todos los derechos reservados',
+    link_home:'Inicio',link_privacy:'Privacidad',link_terms:'Condiciones',
+    noads_price:'Pago único • 5.000 F',rights_reserved:'Todos los derechos reservados',
+    link_home:'Inicio',link_privacy:'Privacidad',link_terms:'Condiciones',
+  },
+  esla:{
+    nav_home:'Inicio',nav_games:'Juegos',nav_dl:'Descargas',nav_lib:'Biblioteca',
+    connect:'Entrar',login_title:'Iniciar sesión',register_title:'Crear cuenta',
+    tab_login:'Entrar',tab_register:'Registrarse',
+    email:'Correo',password:'Contraseña',firstname:'Nombre',lastname:'Apellido',phone:'Teléfono',
+    country:'País',confirm_pwd:'Confirmar contraseña',forgot_pwd:'¿Olvidaste tu contraseña?',or_with:'O continuar con',
+    create_account:'Crear cuenta',my_account:'Mi Cuenta',edit_profile:'Editar perfil',
+    subscription:'Suscripción',no_ads:'Sin anuncios',settings:'Configuración',logout:'Salir',delete_acc:'Eliminar cuenta',
+    display_mode:'Modo de pantalla',language:'Idioma',search:'Buscar...',see_all:'Ver todo →',
+    featured:'🔥 Juegos Destacados',platforms:'🎮 Plataformas',download:'⬇️ Descargar',get_btn:'⬇️ Get',follow_us:'SÍGUENOS',
+    active:'ACTIVO',buy:'Comprar',save:'✅ Guardar',photo:'📷 Foto',remove_photo:'🗑️ Quitar',display_name:'NOMBRE',
+    select_country:'Selecciona tu país *',complete_title:'Completar perfil',complete_sub:'Finaliza tu cuenta',
+    cancel:'Cancelar',disconnect:'🚪 Salir',wave_coming:'Wave — Próximamente',wave_notice:'En progreso.',
+    contact_wa:'💬 WhatsApp',lib_login:'Inicia sesión',lib_subscribe:'Suscríbete para descargar',
+    dl_empty:'Sin descargas.',description:'DESCRIPCIÓN',screenshots:'CAPTURAS',infos:'INFO',
+    platform_lbl:'Plataforma',size_lbl:'Tamaño',rating_lbl:'Nota',status_lbl:'Estado',available:'Disponible',
+    confirm_logout:'Cerrarás sesión.',err_fields:'¡Rellena todos los campos!',
+    err_pwd_short:'Contraseña muy corta',err_pwd_match:'Las contraseñas no coinciden',
+    err_email_taken:'Email en uso ❌',err_wrong_pwd:'Email o contraseña incorrectos ❌',
+    delete_title:'ELIMINAR CUENTA',delete_sub:'Irreversible.',logout_title:'SALIR',account_connected:'✅ Conectado',
+    sub_levels:'Ver planes',choose_level:'Elige tu nivel',sub_title:'SUSCRIPCIONES',
+    locked:'🔒 Requiere suscripción',need_sub:'Suscríbete',
+    tier_noob_feats:'✅ PSP\n✅ PS2',tier_pro_feats:'✅ Noob + Apps + Wii',
+    tier_elite_feats:'✅ Pro + PSVita + PS3 + Wii U + Switch + Emus',tier_maitre_feats:'✅ TODO\n🎁 Regalos!',
+    filter_all:'Todos',no_results:'Sin resultados',
+    ads_remove_title:'Quitar anuncios',ads_remove_sub:'Pago único • 5.000 F',ads_activate:'Activar',
+    download_started:'⬇️ ¡Descarga iniciada!',
+    noads_price:'Pago único • 5.000 F',rights_reserved:'Todos los derechos reservados',
+    link_home:'Inicio',link_privacy:'Privacidad',link_terms:'Condiciones',
+    noads_price:'Pago único • 5.000 F',rights_reserved:'Todos los derechos reservados',
+    link_home:'Inicio',link_privacy:'Privacidad',link_terms:'Condiciones',
+  },
+  de:{
+    nav_home:'Startseite',nav_games:'Spiele',nav_dl:'Downloads',nav_lib:'Bibliothek',
+    connect:'Anmelden',login_title:'Anmelden',register_title:'Registrieren',
+    tab_login:'Anmelden',tab_register:'Registrieren',
+    email:'E-Mail',password:'Passwort',firstname:'Vorname',lastname:'Nachname',phone:'Telefon',
+    country:'Land',confirm_pwd:'Passwort bestätigen',forgot_pwd:'Passwort vergessen?',or_with:'Oder weiter mit',
+    create_account:'Konto erstellen',my_account:'Mein Konto',edit_profile:'Profil bearbeiten',
+    subscription:'Abonnement',no_ads:'Keine Werbung',settings:'Einstellungen',logout:'Abmelden',delete_acc:'Konto löschen',
+    display_mode:'Anzeigemodus',language:'Sprache',search:'Suchen...',see_all:'Alle anzeigen →',
+    featured:'🔥 Featured',platforms:'🎮 Plattformen',download:'⬇️ Herunterladen',get_btn:'⬇️ Get',follow_us:'FOLGE UNS',
+    active:'AKTIV',buy:'Kaufen',save:'✅ Speichern',photo:'📷 Foto',remove_photo:'🗑️ Entfernen',display_name:'ANZEIGENAME',
+    select_country:'Wähle dein Land *',complete_title:'Profil vervollständigen',complete_sub:'Details für dein Konto',
+    cancel:'Abbrechen',disconnect:'🚪 Abmelden',wave_coming:'Wave — Demnächst',wave_notice:'Integration in Bearbeitung.',
+    contact_wa:'💬 WhatsApp',lib_login:'Anmelden für Zugang',lib_subscribe:'Abonnieren zum Herunterladen',
+    dl_empty:'Noch keine Downloads.',lib_title:'Meine Bibliothek',lib_empty:'Noch keine Favoriten',lib_hint:'Tippe ⭐ auf ein Spiel',lib_browse:'Spiele durchsuchen',description:'BESCHREIBUNG',screenshots:'SCREENSHOTS',infos:'INFO',
+    platform_lbl:'Plattform',size_lbl:'Größe',rating_lbl:'Bewertung',status_lbl:'Status',available:'Verfügbar',
+    confirm_logout:'Du wirst abgemeldet.',err_fields:'Bitte alle Felder ausfüllen!',
+    err_pwd_short:'Passwort zu kurz',err_pwd_match:'Passwörter stimmen nicht überein',
+    err_email_taken:'E-Mail bereits vergeben ❌',err_wrong_pwd:'E-Mail oder Passwort falsch ❌',
+    delete_title:'KONTO LÖSCHEN',delete_sub:'Diese Aktion ist unwiderruflich.',
+    logout_title:'ABMELDEN',account_connected:'✅ Konto verbunden',
+    sub_levels:'Pläne ansehen',choose_level:'Wähle dein Level',sub_title:'ABONNEMENTS',
+    locked:'🔒 Abo erforderlich',need_sub:'Abonnieren für Zugang',
+    tier_noob_feats:'✅ PSP-Spiele\n✅ PS2-Spiele',tier_pro_feats:'✅ Alles Noob\n✅ Premium-Apps\n✅ Wii',
+    tier_elite_feats:'✅ Alles Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emulatoren',
+    tier_maitre_feats:'✅ ALLES freigeschaltet\n🎁 Exklusive Geschenke!',
+    filter_all:'Alle',no_results:'Keine Ergebnisse',
+    ads_remove_title:'Werbung entfernen',ads_remove_sub:'Einmalige Zahlung • 5.000 F',ads_activate:'Aktivieren',
+    download_started:'⬇️ Download gestartet!',
+    noads_price:'Einmalige Zahlung • 5.000 F',rights_reserved:'Alle Rechte vorbehalten',
+    link_home:'Startseite',link_privacy:'Datenschutz',link_terms:'Nutzungsbedingungen',
+  },
+  it:{
+    nav_home:'Home',nav_games:'Giochi',nav_dl:'Download',nav_lib:'Libreria',
+    connect:'Accedi',login_title:'Accedi',register_title:'Registrati',
+    tab_login:'Accedi',tab_register:'Registrati',
+    email:'Email',password:'Password',firstname:'Nome',lastname:'Cognome',phone:'Telefono',
+    country:'Paese',confirm_pwd:'Conferma password',forgot_pwd:'Password dimenticata?',or_with:'O continua con',
+    create_account:'Crea account',my_account:'Il mio account',edit_profile:'Modifica profilo',
+    subscription:'Abbonamento',no_ads:'Senza pubblicità',settings:'Impostazioni',logout:'Esci',delete_acc:'Elimina account',
+    display_mode:'Modalità display',language:'Lingua',search:'Cerca...',see_all:'Vedi tutto →',
+    featured:'🔥 In evidenza',platforms:'🎮 Piattaforme',download:'⬇️ Scarica',get_btn:'⬇️ Get',follow_us:'SEGUICI',
+    active:'ATTIVO',buy:'Acquista',save:'✅ Salva',photo:'📷 Foto',remove_photo:'🗑️ Rimuovi',display_name:'NOME VISUALIZZATO',
+    select_country:'Seleziona il tuo paese *',complete_title:'Completa il profilo',complete_sub:'Dettagli per il tuo account',
+    cancel:'Annulla',disconnect:'🚪 Esci',wave_coming:'Wave — Presto disponibile',wave_notice:'Integrazione in corso.',
+    contact_wa:'💬 WhatsApp',lib_login:'Accedi per vedere',lib_subscribe:'Abbonati per scaricare',
+    dl_empty:'Nessun download ancora.',lib_title:'La Mia Libreria',lib_empty:'Nessun preferito',lib_hint:'Tocca ⭐ su un gioco',lib_browse:'Sfoglia giochi',description:'DESCRIZIONE',screenshots:'SCREENSHOT',infos:'INFO',
+    platform_lbl:'Piattaforma',size_lbl:'Dimensione',rating_lbl:'Voto',status_lbl:'Stato',available:'Disponibile',
+    confirm_logout:'Verrai disconnesso.',err_fields:'Compila tutti i campi!',
+    err_pwd_short:'Password troppo corta',err_pwd_match:'Le password non coincidono',
+    err_email_taken:'Email già in uso ❌',err_wrong_pwd:'Email o password errati ❌',
+    delete_title:'ELIMINA ACCOUNT',delete_sub:'Questa azione è irreversibile.',
+    logout_title:'ESCI',account_connected:'✅ Account connesso',
+    sub_levels:'Vedi piani',choose_level:'Scegli il tuo livello',sub_title:'ABBONAMENTI',
+    locked:'🔒 Richiede abbonamento',need_sub:'Abbonati per accedere',
+    tier_noob_feats:'✅ Giochi PSP\n✅ Giochi PS2',tier_pro_feats:'✅ Tutto Noob\n✅ App premium\n✅ Wii',
+    tier_elite_feats:'✅ Tutto Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emulatori',
+    tier_maitre_feats:'✅ TUTTO sbloccato\n🎁 Premi esclusivi!',
+    filter_all:'Tutti',no_results:'Nessun risultato',
+    ads_remove_title:'Rimuovi pubblicità',ads_remove_sub:'Pagamento unico • 5.000 F',ads_activate:'Attiva',
+    download_started:'⬇️ Download avviato!',
+    noads_price:'Pagamento unico • 5.000 F',rights_reserved:'Tutti i diritti riservati',
+    link_home:'Home',link_privacy:'Privacy',link_terms:'Termini',
+  },
+  nl:{
+    nav_home:'Home',nav_games:'Spellen',nav_dl:'Downloads',nav_lib:'Bibliotheek',
+    connect:'Inloggen',login_title:'Inloggen',register_title:'Registreren',
+    tab_login:'Inloggen',tab_register:'Registreren',
+    email:'E-mail',password:'Wachtwoord',firstname:'Voornaam',lastname:'Achternaam',phone:'Telefoon',
+    country:'Land',confirm_pwd:'Wachtwoord bevestigen',forgot_pwd:'Wachtwoord vergeten?',or_with:'Of doorgaan met',
+    create_account:'Account aanmaken',my_account:'Mijn Account',edit_profile:'Profiel bewerken',
+    subscription:'Abonnement',no_ads:'Geen advertenties',settings:'Instellingen',logout:'Uitloggen',delete_acc:'Account verwijderen',
+    display_mode:'Weergavemodus',language:'Taal',search:'Zoeken...',see_all:'Alles zien →',
+    featured:'🔥 Uitgelicht',platforms:'🎮 Platforms',download:'⬇️ Downloaden',get_btn:'⬇️ Get',follow_us:'VOLG ONS',
+    active:'ACTIEF',buy:'Kopen',save:'✅ Opslaan',photo:'📷 Foto',remove_photo:'🗑️ Verwijderen',display_name:'WEERGAVENAAM',
+    select_country:'Selecteer je land *',complete_title:'Profiel voltooien',complete_sub:'Details voor je account',
+    cancel:'Annuleren',disconnect:'🚪 Uitloggen',wave_coming:'Wave — Binnenkort',wave_notice:'Integratie in uitvoering.',
+    contact_wa:'💬 WhatsApp',lib_login:'Log in voor toegang',lib_subscribe:'Abonneer om te downloaden',
+    dl_empty:'Nog geen downloads.',lib_title:'Mijn Bibliotheek',lib_empty:'Nog geen favorieten',lib_hint:'Tik ⭐ op een spel',lib_browse:'Games bekijken',description:'BESCHRIJVING',screenshots:'SCHERMAFBEELDINGEN',infos:'INFO',
+    platform_lbl:'Platform',size_lbl:'Grootte',rating_lbl:'Beoordeling',status_lbl:'Status',available:'Beschikbaar',
+    confirm_logout:'Je wordt uitgelogd.',err_fields:'Vul alle velden in!',
+    err_pwd_short:'Wachtwoord te kort',err_pwd_match:'Wachtwoorden komen niet overeen',
+    err_email_taken:'E-mail al in gebruik ❌',err_wrong_pwd:'E-mail of wachtwoord onjuist ❌',
+    delete_title:'ACCOUNT VERWIJDEREN',delete_sub:'Deze actie is onomkeerbaar.',
+    logout_title:'UITLOGGEN',account_connected:'✅ Account verbonden',
+    sub_levels:'Plannen bekijken',choose_level:'Kies je niveau',sub_title:'ABONNEMENTEN',
+    locked:'🔒 Abonnement vereist',need_sub:'Abonneer voor toegang',
+    tier_noob_feats:'✅ PSP-spellen\n✅ PS2-spellen',tier_pro_feats:'✅ Alles Noob\n✅ Premium-apps\n✅ Wii',
+    tier_elite_feats:'✅ Alles Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emulators',
+    tier_maitre_feats:'✅ ALLES ontgrendeld\n🎁 Exclusieve cadeaus!',
+    filter_all:'Alle',no_results:'Geen resultaten',
+    ads_remove_title:'Advertenties verwijderen',ads_remove_sub:'Eenmalige betaling • 5.000 F',ads_activate:'Activeren',
+    download_started:'⬇️ Download gestart!',
+    noads_price:'Eenmalige betaling • 5.000 F',rights_reserved:'Alle rechten voorbehouden',
+    link_home:'Home',link_privacy:'Privacy',link_terms:'Voorwaarden',
+  },
+  tr:{
+    nav_home:'Ana Sayfa',nav_games:'Oyunlar',nav_dl:'İndirmeler',nav_lib:'Kütüphane',
+    connect:'Giriş',login_title:'Giriş yap',register_title:'Kayıt ol',
+    tab_login:'Giriş',tab_register:'Kayıt',
+    email:'E-posta',password:'Şifre',firstname:'Ad',lastname:'Soyad',phone:'Telefon',
+    country:'Ülke',confirm_pwd:'Şifreyi onayla',forgot_pwd:'Şifreni mi unuttun?',or_with:'Ya da şununla devam et',
+    create_account:'Hesap oluştur',my_account:'Hesabım',edit_profile:'Profili düzenle',
+    subscription:'Abonelik',no_ads:'Reklamsız',settings:'Ayarlar',logout:'Çıkış',delete_acc:'Hesabı sil',
+    display_mode:'Görüntü modu',language:'Dil',search:'Ara...',see_all:'Hepsini gör →',
+    featured:'🔥 Öne Çıkan',platforms:'🎮 Platformlar',download:'⬇️ İndir',get_btn:'⬇️ Al',follow_us:'TAKİP ET',
+    active:'AKTİF',buy:'Satın al',save:'✅ Kaydet',photo:'📷 Fotoğraf',remove_photo:'🗑️ Kaldır',display_name:'GÖRÜNEN AD',
+    select_country:'Ülkeni seç *',complete_title:'Profilini tamamla',complete_sub:'Hesabını tamamla',
+    cancel:'İptal',disconnect:'🚪 Çıkış',wave_coming:'Wave — Çok yakında',wave_notice:'Entegrasyon devam ediyor.',
+    contact_wa:'💬 WhatsApp',lib_login:'Erişim için giriş yap',lib_subscribe:'İndirmek için abone ol',
+    dl_empty:'Henüz indirme yok.',lib_title:'Kütüphanem',lib_empty:'Henüz favori yok',lib_hint:'Eklemek için ⭐ dokun',lib_browse:'Oyunlara göz at',description:'AÇIKLAMA',screenshots:'EKRAN GÖRÜNTÜSÜ',infos:'BİLGİ',
+    platform_lbl:'Platform',size_lbl:'Boyut',rating_lbl:'Puan',status_lbl:'Durum',available:'Mevcut',
+    confirm_logout:'Hesabından çıkış yapacaksın.',err_fields:'Tüm alanları doldur!',
+    err_pwd_short:'Şifre çok kısa',err_pwd_match:'Şifreler eşleşmiyor',
+    err_email_taken:'Bu e-posta kullanımda ❌',err_wrong_pwd:'E-posta veya şifre yanlış ❌',
+    delete_title:'HESABI SİL',delete_sub:'Bu işlem geri alınamaz.',
+    logout_title:'ÇIKIŞ',account_connected:'✅ Hesap bağlandı',
+    sub_levels:'Planları gör',choose_level:'Seviyeni seç',sub_title:'ABONELİKLER',
+    locked:'🔒 Abonelik gerekli',need_sub:'Erişmek için abone ol',
+    tier_noob_feats:'✅ PSP oyunları\n✅ PS2 oyunları',tier_pro_feats:'✅ Tüm Noob\n✅ Premium uygulamalar\n✅ Wii',
+    tier_elite_feats:'✅ Tüm Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Emülatörler',
+    tier_maitre_feats:'✅ HER ŞEY açık\n🎁 Özel hediyeler!',
+    filter_all:'Hepsi',no_results:'Sonuç yok',
+    ads_remove_title:'Reklamları kaldır',ads_remove_sub:'Tek seferlik ödeme • 5.000 F',ads_activate:'Etkinleştir',
+    download_started:'⬇️ İndirme başladı!',
+    noads_price:'Tek seferlik ödeme • 5.000 F',rights_reserved:'Tüm hakları saklıdır',
+    link_home:'Ana Sayfa',link_privacy:'Gizlilik',link_terms:'Koşullar',
+  },
+  ru:{
+    nav_home:'Главная',nav_games:'Игры',nav_dl:'Загрузки',nav_lib:'Библиотека',
+    connect:'Войти',login_title:'Войти',register_title:'Регистрация',
+    tab_login:'Войти',tab_register:'Регистрация',
+    email:'Email',password:'Пароль',firstname:'Имя',lastname:'Фамилия',phone:'Телефон',
+    country:'Страна',confirm_pwd:'Подтвердить пароль',forgot_pwd:'Забыли пароль?',or_with:'Или продолжить с',
+    create_account:'Создать аккаунт',my_account:'Мой аккаунт',edit_profile:'Редактировать профиль',
+    subscription:'Подписка',no_ads:'Без рекламы',settings:'Настройки',logout:'Выйти',delete_acc:'Удалить аккаунт',
+    display_mode:'Режим отображения',language:'Язык',search:'Поиск...',see_all:'Смотреть всё →',
+    featured:'🔥 Рекомендуем',platforms:'🎮 Платформы',download:'⬇️ Скачать',get_btn:'⬇️ Get',follow_us:'ПОДПИСЫВАЙТЕСЬ',
+    active:'АКТИВНО',buy:'Купить',save:'✅ Сохранить',photo:'📷 Фото',remove_photo:'🗑️ Удалить',display_name:'ИМЯ ПРОФИЛЯ',
+    select_country:'Выбери страну *',complete_title:'Заполни профиль',complete_sub:'Данные для аккаунта',
+    cancel:'Отмена',disconnect:'🚪 Выйти',wave_coming:'Wave — Скоро',wave_notice:'Интеграция в процессе.',
+    contact_wa:'💬 WhatsApp',lib_login:'Войдите для доступа',lib_subscribe:'Подпишитесь для загрузки',
+    dl_empty:'Нет загрузок.',description:'ОПИСАНИЕ',screenshots:'СКРИНШОТЫ',infos:'ИНФО',
+    platform_lbl:'Платформа',size_lbl:'Размер',rating_lbl:'Рейтинг',status_lbl:'Статус',available:'Доступно',
+    confirm_logout:'Вы выйдете из аккаунта.',err_fields:'Заполните все поля!',
+    err_pwd_short:'Пароль слишком короткий',err_pwd_match:'Пароли не совпадают',
+    err_email_taken:'Email уже используется ❌',err_wrong_pwd:'Неверный email или пароль ❌',
+    delete_title:'УДАЛИТЬ АККАУНТ',delete_sub:'Это действие необратимо.',
+    logout_title:'ВЫЙТИ',account_connected:'✅ Аккаунт подключён',
+    sub_levels:'Посмотреть планы',choose_level:'Выберите уровень',sub_title:'ПОДПИСКИ',
+    locked:'🔒 Требуется подписка',need_sub:'Подпишитесь для доступа',
+    tier_noob_feats:'✅ Игры PSP\n✅ Игры PS2',tier_pro_feats:'✅ Всё Noob\n✅ Премиум приложения\n✅ Wii',
+    tier_elite_feats:'✅ Всё Pro\n✅ PS Vita + PS3\n✅ Wii U + Switch\n✅ Эмуляторы',
+    tier_maitre_feats:'✅ ВСЁ открыто\n🎁 Эксклюзивные подарки!',
+    filter_all:'Все',no_results:'Нет результатов',
+    ads_remove_title:'Убрать рекламу',ads_remove_sub:'Единоразовый платёж • 5 000 F',ads_activate:'Активировать',
+    download_started:'⬇️ Загрузка началась!',
+    noads_price:'Единоразовый платёж • 5 000 F',rights_reserved:'Все права защищены',
+    link_home:'Главная',link_privacy:'Конфиденциальность',link_terms:'Условия',
+  },
+};
+// Fallback : copier fr pour les clés manquantes
+Object.keys(LANGS).forEach(lang=>{
+  if(lang==='fr') return;
+  Object.keys(LANGS.fr).forEach(k=>{
+    if(!LANGS[lang][k]) LANGS[lang][k]=LANGS.fr[k];
+  });
+});
+
+function detectLang(){
+  const saved=localStorage.getItem('lvup-lang');
+  if(saved&&LANGS[saved]) return saved;
+  const sys=(navigator.language||'fr').toLowerCase();
+  if(sys.startsWith('ar')) return 'ar';
+  if(sys.startsWith('pt-br')||sys==='pt') return 'pt';
+  if(sys.startsWith('pt')) return 'ptpt';
+  if(sys.startsWith('es-419')||sys.startsWith('es-mx')||sys.startsWith('es-co')) return 'esla';
+  if(sys.startsWith('es')) return 'es';
+  if(sys.startsWith('de')) return 'de';
+  if(sys.startsWith('it')) return 'it';
+  if(sys.startsWith('nl')) return 'nl';
+  if(sys.startsWith('tr')) return 'tr';
+  if(sys.startsWith('ru')) return 'ru';
+  if(sys.startsWith('fr')) return 'fr';
+  if(sys.startsWith('en')) return 'en';
+  return 'fr';
+}
+let currentLang=detectLang();
+function t(k){return(LANGS[currentLang]&&LANGS[currentLang][k])||LANGS.fr[k]||k;}
+
+function renderLangModal(){
+  const list=document.getElementById('lang-list');
+  if(!list) return;
+  list.innerHTML=LANG_LIST.map(l=>`
+    <div class="lang-item${l.code===currentLang?' active':''}" onclick="setLang('${l.code}');closeModal('modal-lang');">
+      <span class="lang-item-flag">${l.flag}</span>
+      <span class="lang-item-name">${l.name}</span>
+      ${l.code===currentLang?'<span class="lang-item-check">✓</span>':''}
+    </div>`).join('');
+}
+
+function setLang(lang){
+  if(!LANGS[lang]) return;
+  currentLang=lang;
+  localStorage.setItem('lvup-lang',lang);
+  applyLang();
+  showToast('🌐 '+(LANG_LIST.find(l=>l.code===lang)?.name||lang),'#00c8ff');
+}
+
+function applyLang(){
+  const isAr=currentLang==='ar';
+  document.documentElement.setAttribute('lang',currentLang);
+  document.documentElement.setAttribute('dir',isAr?'rtl':'ltr');
+
+  // Lang sub display
+  const lsd=document.getElementById('lang-sub-display');
+  if(lsd) lsd.textContent=LANG_LIST.find(l=>l.code===currentLang)?.name||currentLang;
+
+  // Nav
+  const navMap=[['nav-home','nav_home'],['nav-games','nav_games'],['nav-downloads','nav_dl'],['nav-library','nav_lib']];
+  navMap.forEach(([id,key])=>{
+    const btn=document.getElementById(id);
+    if(!btn) return;
+    const lbl=btn.querySelector('span:not(.ni)');
+    if(lbl) lbl.textContent=t(key);
+  });
+
+  // Home tab static text
+  setEl('sec-home-featured',t('featured'));
+  setEl('sec-home-seeall',t('see_all'));
+  setEl('sec-home-platforms',t('platforms'));
+  setEl('sec-home-followus',t('follow_us'));
+  setEl('sec-ads-title','🚫 '+t('ads_remove_title'));
+  setEl('sec-ads-sub',t('ads_remove_sub'));
+  setEl('sec-ads-btn',t('ads_activate'));
+  // Link buttons
+  setEl('lb-home-tab','🏠 '+t('link_home'));
+  setEl('lb-privacy-tab','🔒 '+t('link_privacy'));
+  setEl('lb-terms-tab','📜 '+t('link_terms'));
+  // Footer
+  const footerEls=document.querySelectorAll('.footer-txt');
+  footerEls.forEach(el=>el.textContent='Lv-UP STORE v1.0 — GAME Lv-UP © 2025-2026 — '+t('rights_reserved'));
+
+  // Header conn button
+  const cb=document.getElementById('conn-header');
+  if(cb&&!state.loggedIn) cb.textContent=t('connect');
+
+  // Auth modal
+  setEl('tab-login-btn',t('tab_login'));
+  setEl('tab-register-btn',t('tab_register'));
+  setPlaceholder('login-email',t('email'));
+  setPlaceholder('login-password',t('password'));
+  setEl('txt-forgot',t('forgot_pwd'));
+  setEl('txt-or-google','— '+t('or_with')+' —');
+  setEl('txt-or-google2','— '+t('or_with')+' —');
+  setEl('btn-email-login',t('tab_login'));
+  setPlaceholder('reg-firstname',t('firstname')+' *');
+  setPlaceholder('reg-lastname',t('lastname')+' *');
+  setPlaceholder('reg-email',t('email')+' *');
+  setPlaceholder('reg-phone',t('phone')+' *');
+  setPlaceholder('reg-password',t('password')+' (min. 6) *');
+  setPlaceholder('reg-confirm',t('confirm_pwd')+' *');
+  setEl('btn-email-register',t('create_account'));
+
+  // Search
+  setPlaceholder('search-games',t('search'));
+
+  // Settings
+  setEl('txt-settings-title','⚙️ '+t('settings').toUpperCase());
+  setEl('txt-display-lbl',t('display_mode'));
+  setEl('txt-lang-lbl',t('language'));
+  setEl('txt-noads-setting-lbl',t('no_ads'));
+  setEl('noads-setting-sub',t('noads_price'));
+  setEl('noads-setting-val',t('buy'));
+
+  // Sub modal
+  const smt=document.getElementById('txt-sub-modal-title');if(smt)smt.textContent=t('sub_title');
+  const sms=document.getElementById('txt-sub-modal-sub');if(sms)sms.textContent=t('choose_level');
+
+  // Wave
+  setEl('txt-wave-title',t('wave_coming'));
+  const wn=document.getElementById('txt-wave-notice');if(wn)wn.innerHTML=t('wave_notice');
+  setEl('txt-contact-wa',t('contact_wa'));
+
+  // Edit modal
+  setEl('txt-edit-display-name',t('display_name'));
+  const ep=document.getElementById('edit-name');if(ep)ep.placeholder=t('display_name');
+  setEl('txt-edit-save',t('save'));
+  setEl('txt-edit-photo',t('photo'));
+  setEl('txt-edit-remove',t('remove_photo'));
+
+  // Complete profile modal
+  setEl('txt-complete-title',t('complete_title'));
+  setEl('txt-complete-sub',t('complete_sub'));
+  setPlaceholder('cp-firstname',t('firstname')+' *');
+  setPlaceholder('cp-lastname',t('lastname')+' *');
+  setPlaceholder('cp-phone',t('phone')+' *');
+  setEl('btn-complete','✅ '+t('save'));
+
+  // Logout/delete modals
+  setEl('txt-logout-title',t('logout_title'));
+  setEl('txt-logout-sub',t('confirm_logout'));
+  setEl('txt-logout-cancel',t('cancel'));
+  setEl('txt-delete-title',t('delete_title'));
+  setEl('txt-delete-sub',t('delete_sub'));
+
+  populateCountrySelects();
+  renderLangModal();
+  renderFilterPills();
+  renderGames();
+  if(state.loggedIn){renderProfile();renderLibrary();renderDownloads();}
+}
+
+function setEl(id,txt){const el=document.getElementById(id);if(el)el.textContent=txt;}
+function setPlaceholder(id,txt){const el=document.getElementById(id);if(el)el.placeholder=txt;}
+
+function populateCountrySelects(){
+  ['reg-country','cp-country'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;
+    const val=sel.value;
+    sel.innerHTML=`<option value="">${t('select_country')}</option>`+
+      COUNTRIES.map(c=>`<option value="${c.code}"${val===c.code?' selected':''}>${c.name}</option>`).join('');
+  });
+}
+
+// ══════════════════════════════════════════
+// ACHAT PAR JEU — Firestore + localStorage fallback
+// ══════════════════════════════════════════
+function hasPurchased(title){ return (window._purchases||[]).includes(title); }
+async function markPurchased(title){
+  if(!(window._purchases||[]).includes(title)){
+    window._purchases=(window._purchases||[]);
+    window._purchases.push(title);
+  }
+  if(state.loggedIn&&fbAuth.currentUser){
+    await fbDb.collection('users').doc(fbAuth.currentUser.uid).update({
+      purchases:firebase.firestore.FieldValue.arrayUnion(title)
+    });
+  } else {
+    localStorage.setItem('lvup-purchases',JSON.stringify(window._purchases));
+  }
+}
+function canAccess(platId){return false;}
+
+// ── BIBLIOTHÈQUE / FAVORIS — Firestore + localStorage fallback ──
+function getLibrary(){ return window._library||[]; }
+function isInLibrary(title){ return (window._library||[]).includes(title); }
+async function toggleLibrary(title){
+  const inLib=isInLibrary(title);
+  if(inLib){
+    window._library=(window._library||[]).filter(x=>x!==title);
+    showToast('☆ Retiré de la bibliothèque','var(--sub)');
+  } else {
+    window._library=window._library||[];
+    window._library.push(title);
+    showToast('⭐ Ajouté à ta bibliothèque','var(--gold)');
+  }
+  if(state.loggedIn&&fbAuth.currentUser){
+    await fbDb.collection('users').doc(fbAuth.currentUser.uid).update({
+      library:inLib
+        ?firebase.firestore.FieldValue.arrayRemove(title)
+        :firebase.firestore.FieldValue.arrayUnion(title)
+    });
+  } else {
+    localStorage.setItem('lvup-library',JSON.stringify(window._library));
+  }
+  renderLibrary();
+  const favBtn=document.getElementById('dl-fav-btn');
+  if(favBtn){const isFav=isInLibrary(title);favBtn.innerHTML=isFav?'⭐':'☆';favBtn.style.color=isFav?'var(--gold)':'var(--sub)';}
+}
+
+// ══════════════════════════════════════════
+// DATA JEUX (+ Wii U + Apps)
+// ══════════════════════════════════════════
+const PLATFORMS=[
+  {id:'psp',label:'PSP',icon:'🎮',color:'#00c8ff'},
+  {id:'ps2',label:'PS2',icon:'🕹️',color:'#0057ff'},
+  {id:'ps3',label:'PS3',icon:'🎮',color:'#004fcc'},
+  {id:'psvita',label:'PSVita',icon:'📱',color:'#3b00cc'},
+  {id:'wii',label:'Wii',icon:'🕹️',color:'#e03ca0'},
+  {id:'wiiu',label:'Wii U',icon:'🎮',color:'#cc3399'},
+  {id:'switch',label:'Switch',icon:'🎮',color:'#e0003c'},
+  {id:'pc',label:'PC',icon:'💻',color:'#00cc88'},
+  {id:'cloud',label:'Cloud',icon:'☁️',color:'#00aaff'},
+  {id:'emu',label:'Émulateurs',icon:'⚙️',color:'#ff8800'},
+  {id:'mobile',label:'Mobile',icon:'📲',color:'#aa00ff'},
+  {id:'apps',label:'Apps Premium',icon:'⭐',color:'#ffcc00'},
+];
+const GAMES={
+  psp:[
+    {title:'God of War: Chains of Olympus',size:'800MB',rating:4.8,img:'',price:500},
+    {title:'Crisis Core: FF VII',size:'1.2GB',rating:4.9,img:'',price:500},
+    {title:'Tekken 6',size:'1.5GB',rating:4.7,img:'',price:300},
+    {title:'GTA: Liberty City Stories',size:'900MB',rating:4.6,img:'',price:300},
+  ],
+  ps2:[
+    {title:'DBZ: Budokai 3',size:'3.2GB',rating:4.9,img:'',price:500},
+    {title:'GTA: San Andreas',size:'4.7GB',rating:5.0,img:'',price:700},
+    {title:'Kingdom Hearts',size:'3.8GB',rating:4.8,img:'',price:500},
+    {title:'Naruto: Ultimate Ninja 5',size:'3.1GB',rating:4.7,img:'',price:500},
+  ],
+  ps3:[
+    {title:'Uncharted 3',size:'18GB',rating:4.9,img:'',price:1000},
+    {title:'The Last of Us',size:'22GB',rating:5.0,img:'',price:1500},
+    {title:'God of War III',size:'16GB',rating:4.9,img:'',price:1000},
+    {title:'Red Dead Redemption',size:'14GB',rating:4.8,img:'',price:1000},
+  ],
+  switch:[
+    {title:'Mario Kart 8 Deluxe',size:'6.8GB',rating:4.9,img:'',price:2000},
+    {title:'Zelda: TotK',size:'16.3GB',rating:5.0,img:'',price:2500},
+    {title:'Pokémon Scarlet',size:'7.2GB',rating:4.6,img:'',price:2000},
+    {title:'Super Smash Bros Ultimate',size:'14.7GB',rating:4.9,img:'',price:2000},
+  ],
+  wii:[
+    {title:'Super Mario Galaxy',size:'4.4GB',rating:5.0,img:'',price:1000},
+    {title:'Wii Sports',size:'4.0GB',rating:4.7,img:'',price:700},
+    {title:'Mario Kart Wii',size:'4.3GB',rating:4.8,img:'',price:700},
+  ],
+  wiiu:[
+    {title:'Super Mario 3D World',size:'1.7GB',rating:4.9,img:'',price:1500},
+    {title:'Mario Kart 8',size:'4.0GB',rating:4.9,img:'',price:1000},
+    {title:'Splatoon',size:'2.0GB',rating:4.7,img:'',price:1000},
+  ],
+  pc:[
+    {title:'GTA V',size:'95GB',rating:4.9,img:'',price:3000},
+    {title:'Minecraft Java',size:'4GB',rating:5.0,img:'',price:1500},
+    {title:'Elden Ring',size:'52GB',rating:4.9,img:'',price:3000},
+    {title:'FIFA 24',size:'47GB',rating:4.5,img:'',price:2000},
+  ],
+  cloud:[
+    {title:'Xbox Game Pass Cloud',size:'Stream',rating:4.7,img:'',price:2000},
+    {title:'GeForce NOW',size:'Stream',rating:4.6,img:'',price:2000},
+    {title:'Amazon Luna',size:'Stream',rating:4.4,img:'',price:2000},
+  ],
+  psvita:[
+    {title:'Persona 4 Golden',size:'2.8GB',rating:5.0,img:'',price:1000},
+    {title:'Gravity Rush',size:'1.9GB',rating:4.7,img:'',price:1000},
+    {title:'Uncharted: Golden Abyss',size:'3.5GB',rating:4.6,img:'',price:700},
+  ],
+  emu:[
+    {title:'PPSSPP',size:'45MB',rating:4.9,img:'',price:0},
+    {title:'PCSX2',size:'120MB',rating:4.8,img:'',price:500},
+    {title:'Dolphin Emulator',size:'95MB',rating:4.9,img:'',price:500},
+    {title:'Yuzu (Switch)',size:'85MB',rating:4.7,img:'',price:500},
+    {title:'Winlator Bionic',size:'180MB',rating:4.8,img:'',price:2000},
+    {title:'Winlator Ludashi',size:'165MB',rating:4.7,img:'',price:2000},
+  ],
+  mobile:[
+    {title:'PUBG Mobile',size:'2.1GB',rating:4.5,img:'',price:700},
+    {title:'Genshin Impact',size:'12GB',rating:4.8,img:'',price:700},
+    {title:'Honkai: Star Rail',size:'8GB',rating:4.7,img:'',price:700},
+    {title:'Call of Duty Mobile',size:'3.5GB',rating:4.6,img:'',price:700},
+  ],
+  apps:[
+    {title:'Spotify Premium',size:'35MB',rating:4.9,img:'',price:1500},
+    {title:'YouTube Premium',size:'50MB',rating:4.8,img:'',price:1500},
+    {title:'Netflix',size:'45MB',rating:4.7,img:'',price:2000},
+    {title:'Canva Pro',size:'60MB',rating:4.6,img:'',price:1500},
+  ],
+};
+const FEATURED=[
+  {title:'God of War: Chains of Olympus',platform:'psp',glow:'#00c8ff',img:''},
+  {title:'Mario Kart 8 Deluxe',platform:'switch',glow:'#e0003c',img:''},
+  {title:'Elden Ring',platform:'pc',glow:'#f5c842',img:''},
+  {title:'The Last of Us',platform:'ps3',glow:'#00cc88',img:''},
+];
+const SOCIALS=[
+  {name:'TikTok',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>`,color:'#ff0055',url:'https://www.tiktok.com/@kiddo_creator'},
+  {name:'YouTube',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>`,color:'#ff2200',url:'https://youtube.com/@kiddo.gamplay'},
+  {name:'Telegram',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>`,color:'#0088cc',url:'https://t.me/Kiddo01Bot'},
+  {name:'WhatsApp',icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>`,color:'#25d366',url:'https://whatsapp.com/channel/0029VbCF1Ux4CrfalXO1Yh2Z'},
+];
+const GAME_DESCS={
+  'God of War: Chains of Olympus':'Kratos combat les dieux de la mythologie grecque dans cette aventure épique sur PSP.',
+  'Crisis Core: FF VII':'L\'histoire de Zack Fair, préquel de Final Fantasy VII. RPG d\'action inoubliable.',
+  'Tekken 6':'Le roi du tournoi de fer avec un roster immense et des combats brutaux.',
+  'GTA: Liberty City Stories':'Toni Cipriani à Liberty City. Open world et missions explosives sur PSP.',
+  'DBZ: Budokai 3':'Le meilleur jeu Dragon Ball Z. Combats 3D et transformations épiques.',
+  'GTA: San Andreas':'CJ retourne à Los Santos. Le plus grand open world de la PS2.',
+  'Kingdom Hearts':'Disney × Final Fantasy. Sora traverse des mondes enchantés.',
+  'Naruto: Ultimate Ninja 5':'Jeu de combat Naruto ultime sur PS2.',
+  'Uncharted 3':'Nathan Drake à la recherche de l\'Atlantide des sables.',
+  'The Last of Us':'Joel et Ellie dans une Amérique post-apocalyptique. Chef-d\'œuvre narratif.',
+  'God of War III':'Kratos escalade l\'Olympe. Boss fights colossaux en HD.',
+  'Red Dead Redemption':'John Marston dans l\'Ouest américain. Western épique.',
+  'Mario Kart 8 Deluxe':'Course ultime sur Switch. 48 circuits et fun garanti.',
+  'Zelda: TotK':'Hyrule et les îles célestes avec des pouvoirs révolutionnaires.',
+  'Pokémon Scarlet':'Région de Paldoa en monde ouvert.',
+  'Super Smash Bros Ultimate':'80+ combattants. Le Smash le plus complet.',
+  'Super Mario Galaxy':'Mario dans l\'espace. Galaxies à couper le souffle.',
+  'Wii Sports':'Le jeu qui a révolutionné le gaming familial.',
+  'Mario Kart Wii':'Courses frénétiques à 12 joueurs.',
+  'Super Mario 3D World':'Mario en 3D pour Wii U. Multijoueur fun et coloré.',
+  'Mario Kart 8':'Courses anti-gravité sur Wii U. Le précurseur de MK8 Deluxe.',
+  'Splatoon':'Jeu de tir coloré à l\'encre. Compétitif et fun sur Wii U.',
+  'GTA V':'Los Santos avec trois protagonistes. Braquages épiques.',
+  'Minecraft Java':'Construis et explore dans un monde infini.',
+  'Elden Ring':'RPG open world brutalement difficile et magnifique.',
+  'FIFA 24':'Le football ultime avec équipes et joueurs officiels.',
+  'Xbox Game Pass Cloud':'100+ jeux Xbox en streaming sans console.',
+  'GeForce NOW':'Cloud gaming NVIDIA. Puissance des serveurs RTX.',
+  'Amazon Luna':'Service cloud gaming d\'Amazon.',
+  'Persona 4 Golden':'JRPG culte mêlant lycée, amitiés et combat.',
+  'Gravity Rush':'Kat manipule la gravité dans une ville flottante surréaliste.',
+  'Uncharted: Golden Abyss':'Nathan Drake dans la jungle. Aventure PS Vita.',
+  'PPSSPP':'L\'émulateur PSP le plus puissant. Jeux en HD.',
+  'PCSX2':'Émulateur PS2 open-source. Compatible 95% des jeux.',
+  'Dolphin Emulator':'Émule GameCube et Wii en HD.',
+  'Yuzu (Switch)':'Émulateur Nintendo Switch expérimental haute performance.',
+  'PUBG Mobile':'Battle Royale 100 joueurs sur mobile.',
+  'Genshin Impact':'RPG action en monde ouvert. Explore Teyvat.',
+  'Honkai: Star Rail':'RPG au tour par tour de MiHoYo. Univers immersif.',
+  'Spotify Premium':'Écoute toute la musique sans pub, hors ligne.',
+  'YouTube Premium':'Vidéos sans pub + YouTube Music inclus.',
+  'Netflix':'Streaming de films et séries en HD.',
+  'Canva Pro':'Design graphique professionnel avec accès premium.',
+};
+
+// ══════════════════════════════════════════
+// FIREBASE CONFIG (déjà initialisé dans le <head>)
+// ══════════════════════════════════════════
+const isMedianApp=/median/i.test(navigator.userAgent||'');
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let state={
+  theme:'dark',loggedIn:false,noAds:false,
+  featIdx:1,filterPlat:'all',activePlat:'psp',
+  user:{name:'Lv-UP User',email:'',photo:null},
+  editPhoto:null,selGame:null,session:null,authReady:false,
+  activeDownload:null,completedDownloads:[],
+  currentYTVideo:null,
+};
+// Alias pour compatibilité
+Object.defineProperty(state,'subscribed',{get:()=>false});
+
+// ══════════════════════════════════════════
+// SCROLL ANIMATIONS
+// ══════════════════════════════════════════
+let revealObserver=null;
+function initReveal(){
+  if(revealObserver) revealObserver.disconnect();
+  revealObserver=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  },{threshold:0,rootMargin:'60px 0px 0px 0px'});
+  document.querySelectorAll('.reveal,.reveal-stagger').forEach(el=>{
+    el.classList.remove('visible');
+    revealObserver.observe(el);
+  });
+}
+// Déclencher sur changement de tab et après render
+function revealTab(){setTimeout(initReveal,80);}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+let micRecognition=null;
+window.onload=async()=>{
+  populateCountrySelects();
+  applyLang();
+  renderLangModal();
+  renderPlatforms();renderSocials();renderFeatured();
+  renderFilterPills();renderGames();renderLibrary();renderProfile();renderDownloads();
+  await initAuth();
+  // initOneSignal(); // Remplacé par Firebase
+  requestAllPermissions();
+  startFeatTimer();
+  const saved=localStorage.getItem('lvup-theme');
+  if(saved && saved!=='auto') setThemeMode(saved);
+  else setThemeMode('auto');
+  
+  // Détection d'orientation pour mode paysage
+  initOrientationDetection();
+  
+  initReveal();
+};
+
+// ══════════════════════════════════════════
+// ORIENTATION DETECTION
+// ══════════════════════════════════════════
+function initOrientationDetection(){
+  function updateOrientation(){
+    const isLandscape=window.innerHeight<window.innerWidth;
+    if(isLandscape){
+      document.documentElement.classList.add('landscape');
+      document.body.classList.add('landscape');
+    } else {
+      document.documentElement.classList.remove('landscape');
+      document.body.classList.remove('landscape');
+    }
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation,{passive:true});
+  window.addEventListener('orientationchange',updateOrientation,{passive:true});
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg,color='#00c8ff'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.style.display='block';
+  el.style.color=color;el.style.borderColor=color;
+  el.style.background=color+'22';el.style.boxShadow=`0 4px 24px ${color}44`;
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2800);
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function setTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const tab=document.getElementById('tab-'+id);
+  const btn=document.getElementById('nav-'+id);
+  if(tab)tab.classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='library')renderLibrary();
+  if(id==='profile'){renderProfile();revealTab();}
+  if(id==='downloads'){renderDownloads();revealTab();}
+  if(id==='games'){renderGames();revealTab();}
+  if(id==='home')revealTab();
+}
+
+// ══════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════
+function setThemeMode(mode){
+  localStorage.setItem('lvup-theme',mode);
+  document.body.classList.remove('force-dark','force-light');
+  if(mode==='dark') document.body.classList.add('force-dark');
+  else if(mode==='light') document.body.classList.add('force-light');
+  // mode==='auto' → rien, le CSS @media prefers-color-scheme prend le relais
+  const sub=document.getElementById('theme-sub');
+  if(sub)sub.textContent=mode==='auto'?'Auto 🔄':mode==='light'?'☀️':' 🌙';
+  ['auto','light','dark'].forEach(m=>{
+    const b=document.getElementById('btn-'+m);if(!b)return;
+    b.style.background=m===mode?'var(--accent)':'var(--card)';
+    b.style.color=m===mode?'#fff':'var(--text)';
+    b.style.border=m===mode?'2px solid var(--accent)':'1px solid var(--border)';
+  });
+  
+  // Écouter les changements du système en mode auto
+  if(mode==='auto'){
+    if(window.matchMedia){
+      const darkModeQuery=window.matchMedia('(prefers-color-scheme: dark)');
+      darkModeQuery.addEventListener('change',(e)=>{
+        document.body.classList.remove('force-dark','force-light');
+        // CSS @media gère automatiquement
+      });
+    }
+  }
+}
+
+// ══════════════════════════════════════════
+// MIC
+// ══════════════════════════════════════════
+async function startMic(){
+  const btn=document.getElementById('mic-btn');
+  if(micRecognition){micRecognition.stop();micRecognition=null;if(btn)btn.classList.remove('mic-recording');return;}
+  if(!('webkitSpeechRecognition'in window)&&!('SpeechRecognition'in window)){showToast('Micro non supporté 😕','#ff4444');return;}
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(tr=>tr.stop());
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    micRecognition=new SR();
+    const lm={fr:'fr-FR',en:'en-US',ar:'ar-SA',pt:'pt-BR',ptpt:'pt-PT',es:'es-ES',esla:'es-419',de:'de-DE',it:'it-IT',nl:'nl-NL',tr:'tr-TR',ru:'ru-RU'};
+    micRecognition.lang=lm[currentLang]||'fr-FR';
+    micRecognition.continuous=false;micRecognition.interimResults=false;
+    if(btn)btn.classList.add('mic-recording');
+    micRecognition.onresult=e=>{
+      const txt=e.results?.[0]?.[0]?.transcript||'';
+      const sg=document.getElementById('search-games');if(sg){sg.value=txt;renderGames();}
+      showToast('🎙️ "'+txt+'"','#00c8ff');
+      if(btn)btn.classList.remove('mic-recording');micRecognition=null;
+    };
+    micRecognition.onerror=()=>{if(btn)btn.classList.remove('mic-recording');micRecognition=null;};
+    micRecognition.onend=()=>{if(btn)btn.classList.remove('mic-recording');micRecognition=null;};
+    micRecognition.start();
+  }catch(_){showToast('Active le micro 🎙️','#ff4444');}
+}
+
+// ══════════════════════════════════════════
+// FEATURED
+// ══════════════════════════════════════════
+const CARD_W=148;
+let featPaused=false,featDragging=false,featStartX=0,featDragDX=0;
+function renderFeatured(){
+  const wrap=document.getElementById('featured-wrap');
+  const dots=document.getElementById('feat-dots');
+  if(!wrap||!dots)return;
+  wrap.innerHTML=FEATURED.map((f,i)=>`
+    <div class="feat-card" onclick="setFilterAndGo('${f.platform}')">
+      <div style="width:100%;height:172px;background:linear-gradient(160deg,${f.glow}55,${f.glow}11,var(--bg2) 80%);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.5));border-radius:14px 14px 0 0;"></div><span style="position:relative;z-index:1;filter:drop-shadow(0 4px 12px ${f.glow});">🎮</span></div>
+      <div class="feat-label" style="color:${f.glow};font-size:10px;padding:6px 4px;">${f.title}</div>
+    </div>`).join('');
+  dots.innerHTML=FEATURED.map((_,i)=>`<div class="dot" onclick="goToFeat(${i})"></div>`).join('');
+  updateFeatured(false);
+  wrap.addEventListener('touchstart',e=>{featStartX=e.touches[0].clientX;featDragging=true;featDragDX=0;featPaused=true;},{passive:true});
+  wrap.addEventListener('touchmove',e=>{if(!featDragging)return;featDragDX=e.touches[0].clientX-featStartX;_applyDrag(featDragDX);},{passive:true});
+  wrap.addEventListener('touchend',()=>{
+    if(!featDragging)return;featDragging=false;
+    if(featDragDX<-50&&state.featIdx<FEATURED.length-1)state.featIdx++;
+    else if(featDragDX>50&&state.featIdx>0)state.featIdx--;
+    updateFeatured(true);setTimeout(()=>featPaused=false,2000);
+  },{passive:true});
+}
+function startFeatTimer(){setInterval(()=>{if(!featPaused){state.featIdx=(state.featIdx+1)%FEATURED.length;updateFeatured(true);}},5000);}
+function goToFeat(i){state.featIdx=i;updateFeatured(true);featPaused=true;setTimeout(()=>featPaused=false,2000);}
+function _applyDrag(dx){
+  document.querySelectorAll('.feat-card').forEach((c,i)=>{
+    const off=i-state.featIdx,absOff=Math.abs(off);
+    c.style.transition='none';
+    const sc=absOff===0?Math.max(0.86,1.05-Math.abs(dx)/CARD_W*0.18):absOff===1?0.84:0.70;
+    c.style.transform=`translateX(${off*CARD_W+dx}px) scale(${sc})`;
+    c.style.opacity=absOff>2?'0':absOff===0?'1':absOff===1?'0.52':'0.18';
+    c.style.zIndex=absOff===0?'10':absOff===1?'8':absOff===2?'6':'4';
+  });
+}
+function updateFeatured(animate){
+  const cards=document.querySelectorAll('.feat-card');
+  const dots=document.querySelectorAll('.dot');
+  const tr='transform .58s cubic-bezier(0.25,0.46,0.45,0.94),opacity .5s ease,filter .5s ease';
+  cards.forEach((c,i)=>{
+    if(animate!==false)c.style.transition=tr;else c.style.transition='none';
+    const off=i-state.featIdx,isC=off===0,absOff=Math.abs(off);
+    c.style.transform=`translateX(${off*CARD_W}px) scale(${isC?1.05:absOff===1?0.84:0.70})`;
+    c.style.opacity=absOff>2?'0':isC?'1':absOff===1?'0.52':'0.18';
+    c.style.zIndex=isC?'10':absOff===1?'8':absOff===2?'6':'4';
+    c.style.borderColor=isC?FEATURED[i].glow:'var(--border)';
+    c.style.filter=isC?`drop-shadow(0 0 18px ${FEATURED[i].glow}66)`:'none';
+    const lbl=c.querySelector('.feat-label');if(lbl)lbl.style.display=isC?'block':'none';
+  });
+  dots.forEach((d,i)=>{
+    d.classList.toggle('active',i===state.featIdx);
+    d.style.width=i===state.featIdx?'18px':'6px';
+  });
+}
+
+// ══════════════════════════════════════════
+// PLATFORMS / FILTER / GAMES
+// ══════════════════════════════════════════
+function renderPlatforms(){
+  document.getElementById('plat-grid').innerHTML=PLATFORMS.map(p=>`
+    <div class="plat-btn" style="border-color:${p.color}55;position:relative;" onclick="setFilterAndGo('${p.id}')">
+      ${!canAccess(p.id)?'<div style="position:absolute;top:4px;right:4px;font-size:9px;">🔒</div>':''}
+      <span class="plat-icon">${p.icon}</span>
+      <span class="plat-label" style="color:${p.color};">${p.label}</span>
+    </div>`).join('');
+}
+function setFilterAndGo(id){state.activePlat=id;state.filterPlat=id;setTab('games');renderGames();updateFilterPills();}
+function renderSocials(){
+  document.getElementById('socials-row').innerHTML=SOCIALS.map(s=>`
+    <a href="${s.url}" target="_blank" class="social-btn" style="border-color:${s.color}44;color:${s.color};display:flex;flex-direction:column;align-items:center;gap:4px;">
+      ${s.icon}<span>${s.name}</span></a>`).join('');
+}
+function renderFilterPills(){
+  const all=[{id:'all',label:t('filter_all'),icon:'🎯',color:'var(--accent)'},...PLATFORMS];
+  document.getElementById('filter-row').innerHTML=all.map(p=>`
+    <button class="pill" id="pill-${p.id}"
+      style="color:${state.filterPlat===p.id?'#fff':p.color};background:${state.filterPlat===p.id?p.color:'var(--card)'};border-color:${p.color}55;"
+      onclick="setFilter('${p.id}')">${p.icon} ${p.label}</button>`).join('');
+}
+function updateFilterPills(){renderFilterPills();}
+function setFilter(id){state.filterPlat=id;renderGames();updateFilterPills();}
+function renderGames(){
+  const q=(document.getElementById('search-games')?.value||'').toLowerCase();
+  const all=Object.entries(GAMES).flatMap(([p,gs])=>gs.map(g=>({...g,platform:p})));
+  const list=q?all.filter(g=>g.title.toLowerCase().includes(q)):state.filterPlat==='all'?all:all.filter(g=>g.platform===state.filterPlat);
+  const plat=PLATFORMS.find(p=>p.id===state.filterPlat);
+  const locked=state.filterPlat!=='all'&&!canAccess(state.filterPlat);
+
+  document.getElementById('games-list').innerHTML=list.length===0?`<div style="text-align:center;color:var(--sub);padding:40px 0;font-size:14px;">${t('no_results')} 🎮</div>`
+    :list.map((g,i)=>{
+    const ga=canAccess(g.platform);
+    return `<div class="game-card reveal up" style="transition-delay:${i*0.04}s;">
+      <div style="width:56px;height:76px;border-radius:10px;background:linear-gradient(135deg,${PLATFORMS.find(p=>p.id===g.platform)?.color||'#00c8ff'}33,var(--bg2));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border);">🎮</div>
+      <div style="flex:1;min-width:0;">
+        <div class="game-title">${g.title}</div>
+        <div class="game-meta">
+          <div class="game-tag" style="color:${PLATFORMS.find(p=>p.id===g.platform)?.color||'var(--accent)'};border-color:${PLATFORMS.find(p=>p.id===g.platform)?.color||'var(--accent)'}44;background:${PLATFORMS.find(p=>p.id===g.platform)?.color||'var(--accent)'}15;">${PLATFORMS.find(p=>p.id===g.platform)?.label||g.platform}</div>
+          <span class="game-size">${g.size}</span>
+          <span class="game-rating">★ ${g.rating}</span>
+        </div>
+      </div>
+      <button class="dl-btn" onclick='openGameDetail(${JSON.stringify(g)})' style="${hasPurchased(g.title)?'background:linear-gradient(135deg,#00cc88,#009966);':''}">
+        <span style="display:flex;align-items:center;gap:5px;">
+          ${hasPurchased(g.title)
+            ?`<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Get`
+            :`<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 12h-5v-5h-2v5H5l7 7 7-7z"/><path d="M19 18H5v2h14v-2z"/></svg> ${g.price||0} F`}
+        </span>
+      </button>
+    </div>`}).join('');
+  revealTab();
+}
+
+// ══════════════════════════════════════════
+// LIBRARY / DOWNLOADS
+// ══════════════════════════════════════════
+function renderLibrary(){
+  const c=document.getElementById('lib-content');
+  const lib=getLibrary();
+  const allGames=Object.entries(GAMES).flatMap(([p,gs])=>gs.map(g=>({...g,platform:p})));
+  const favGames=allGames.filter(g=>lib.includes(g.title));
+
+  if(!state.loggedIn){
+    // Même sans connexion, on peut voir sa bibliothèque locale
+    if(favGames.length===0){
+      c.innerHTML=`<div class="center-view reveal scale">
+        <div style="font-size:60px;margin-bottom:18px;">📚</div>
+        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:700;color:var(--accent);margin-bottom:10px;">${t('lib_title')||'Ma Bibliothèque'}</div>
+        <div style="color:var(--sub);font-size:13px;margin-bottom:22px;">${t('lib_hint')||'Clique ⭐ sur un jeu pour l\'ajouter'}</div>
+        <button class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;" onclick="setTab('games')">🎮 ${t('lib_browse')||'Parcourir les jeux'}</button>
+      </div>`;
+    } else {
+      c.innerHTML=_renderFavList(favGames);
+    }
+  } else {
+    if(favGames.length===0){
+      c.innerHTML=`<div class="center-view reveal scale">
+        <div style="font-size:60px;margin-bottom:18px;">📚</div>
+        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:700;color:var(--accent);margin-bottom:10px;">${t('lib_title')||'Ma Bibliothèque'}</div>
+        <div style="color:var(--sub);font-size:13px;margin-bottom:22px;">${t('lib_hint')||'Clique ⭐ sur un jeu pour l\'ajouter'}</div>
+        <button class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;" onclick="setTab('games')">🎮 ${t('lib_browse')||'Parcourir les jeux'}</button>
+      </div>`;
+    } else {
+      c.innerHTML=_renderFavList(favGames);
+    }
+  }
+  setTimeout(initReveal,100);
+}
+function _renderFavList(favGames){
+  return `<div>
+    <div style="font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;">⭐ Ma Bibliothèque (${favGames.length})</div>
+    ${favGames.map((g,i)=>{
+      const plat=PLATFORMS.find(p=>p.id===g.platform)||{color:'var(--accent)',label:g.platform};
+      return `<div class="game-card reveal up" style="transition-delay:${i*0.04}s;">
+        <div style="width:56px;height:76px;border-radius:10px;background:linear-gradient(135deg,${plat.color}33,var(--bg2));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border);">🎮</div>
+        <div style="flex:1;min-width:0;">
+          <div class="game-title">${g.title}</div>
+          <div class="game-meta">
+            <div class="game-tag" style="color:${plat.color};border-color:${plat.color}44;background:${plat.color}15;">${plat.label}</div>
+            <span class="game-size">${g.size}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+          <button onclick="toggleLibrary('${g.title.replace(/'/g,"\'")}'); renderLibrary();" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--gold);">⭐</button>
+          <button class="dl-btn" onclick='openGameDetail(${JSON.stringify(g)})' style="font-size:11px;padding:7px 10px;${hasPurchased(g.title)?'background:linear-gradient(135deg,#00cc88,#009966);':''}">
+            ${hasPurchased(g.title)?'✅ Get':`${g.price||0} F`}
+          </button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function renderDownloads(){
+  const c=document.getElementById('downloads-content');
+  if(!state.loggedIn){
+    c.innerHTML=`<div class="center-view reveal scale">
+      <div style="font-size:60px;margin-bottom:18px;">⬇️</div>
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:700;color:var(--accent);margin-bottom:10px;">${t('nav_dl')}</div>
+      <div style="color:var(--sub);font-size:14px;margin-bottom:22px;">${t('lib_login')}</div>
+      <button class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;" onclick="openModal('login')">${t('connect')}</button>
+    </div>`;
+  } else {
+    const active=state.activeDownload;
+    c.innerHTML=`
+      <div style="margin-bottom:18px;">
+        <div style="font-family:'Arial Black',Arial,sans-serif;font-size:16px;font-weight:700;color:var(--accent);margin-bottom:14px;">⬇️ ${t('nav_dl')}</div>
+        ${active?`
+        <div class="glass-card" style="padding:16px;margin-bottom:14px;border-color:var(--accent)44;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="width:44px;height:44px;border-radius:10px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:20px;">🎮</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${active.title}</div>
+              <div style="font-size:11px;color:var(--sub);margin-top:2px;">Téléchargement en cours...</div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent);">${active.progress||0}%</div>
+          </div>
+          <div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;">
+            <div style="height:100%;width:${active.progress||0}%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .3s;"></div>
+          </div>
+        </div>`:``}
+        ${state.completedDownloads&&state.completedDownloads.length>0?
+          state.completedDownloads.map(d=>`
+          <div class="game-card reveal up" style="margin-bottom:10px;">
+            <div style="width:44px;height:60px;border-radius:8px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:18px;">✅</div>
+            <div style="flex:1;min-width:0;">
+              <div class="game-title">${d.title}</div>
+              <div style="font-size:11px;color:#00cc88;">Téléchargé · ${d.size}</div>
+            </div>
+            <button class="dl-btn" style="background:linear-gradient(135deg,#00cc88,#009966);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>`).join('')
+        :`<div class="center-view" style="min-height:50vh;">
+            <div style="font-size:50px;margin-bottom:14px;">📭</div>
+            <div style="color:var(--sub);font-size:14px;text-align:center;">Aucun téléchargement pour l'instant !</div>
+            <button class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;margin-top:20px;" onclick="setTab('games')">🎮 ${t('lib_browse')||'Parcourir les jeux'}</button>
+          </div>`}
+      </div>`;
+  }
+  setTimeout(initReveal,100);
+}
+
+// ══════════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════════
+function renderProfile(){
+  const c=document.getElementById('profile-content');
+  if(!state.loggedIn){
+    c.innerHTML=`<div class="center-view reveal scale">
+      <div style="font-size:60px;margin-bottom:18px;">👤</div>
+      <div style="font-family:'Arial Black',Arial,sans-serif;font-size:18px;font-weight:700;color:var(--accent);margin-bottom:20px;">${t('my_account')}</div>
+      <button class="big-btn" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;" onclick="openModal('login')">${t('connect')}</button>
+    </div>`;setTimeout(initReveal,100);return;
+  }
+  const u=state.user;
+  const photoHtml=u.photo
+    ?`<img src="${u.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>`
+    :`<span style="font-size:36px;">👤</span>`;
+  const tierBadge=state.subTier>0?`<div style="margin-top:8px;"><div class="prem-badge-lg" style="background:rgba(0,200,255,.15);border:1px solid var(--accent);color:var(--accent);">${TIER_NAMES[state.subTier]}</div></div>`:'';
+
+  c.innerHTML=`
+    <div class="glass-card profile-card reveal up">
+      <div style="position:relative;display:inline-block;margin-bottom:4px;">
+        <div class="avatar-lg">${photoHtml}</div>
+        <button class="edit-btn" onclick="openEdit()">✏️</button>
+      </div>
+      <div class="profile-name">${u.name}</div>
+      <div class="profile-email">${u.email}</div>
+      <div class="profile-auth-badge">${t('account_connected')}</div>
+      ${tierBadge}
+    </div>
+    <div class="stats-row reveal-stagger">
+      <div class="stat-card"><div style="font-size:20px;margin-bottom:3px;">⬇️</div><div class="stat-val">0</div><div class="stat-lbl">${t('nav_dl')}</div></div>
+      <div class="stat-card"><div style="font-size:20px;margin-bottom:3px;">🎮</div><div class="stat-val" style="color:var(--accent);font-size:11px;">${TIER_NAMES[state.subTier]}</div><div class="stat-lbl">${t('subscription')}</div></div>
+      <div class="stat-card"><div style="font-size:20px;margin-bottom:3px;">🚫</div><div class="stat-val" style="color:var(--accent);">${state.noAds?t('active'):'Non'}</div><div class="stat-lbl">${t('no_ads')}</div></div>
+    </div>
+    ${[
+      {i:'✏️',l:t('edit_profile'),c:'var(--accent)',a:`openEdit()`},
+      {i:'🎮',l:state.subTier>0?TIER_NAMES[state.subTier]+' ✅':t('sub_title'),c:'var(--gold)',a:`handleSubscribeClick()`},
+      {i:'🚫',l:state.noAds?t('no_ads')+' ✅':t('no_ads'),c:'#ff6b00',a:!state.noAds?`handleNoAdsClick()`:'void 0'},
+      {i:'⚙️',l:t('settings'),c:'var(--sub)',a:`openModal('settings')`},
+      {i:'🚪',l:t('logout'),c:'#ff6666',a:`handleLogout()`},
+      {i:'🗑️',l:t('delete_acc'),c:'#ff2222',a:`confirmDelete()`},
+    ].map((item,i)=>`<div class="opt-row reveal up" style="transition-delay:${0.05+i*0.05}s;" onclick="${item.a}"><span style="font-size:20px;">${item.i}</span><span class="opt-label" style="color:${item.c};">${item.l}</span><span class="opt-arrow">›</span></div>`).join('')}
+    <div style="font-size:12px;color:var(--sub);margin:18px 0 10px;letter-spacing:1px;font-weight:700;">${t('follow_us')}</div>
+    <div class="socials-grid reveal-stagger">${SOCIALS.map(s=>`<a href="${s.url}" target="_blank" class="social-card" style="border-color:${s.color}44;color:${s.color};"><div style="font-size:24px;margin-bottom:5px;">${s.icon}</div>${s.name}</a>`).join('')}</div>
+    <div class="link-buttons">
+      <a class="link-btn" href="https://gamelv-up.blogspot.com/2026/03/page-daccord-lv-up-store.html" target="_blank">🏠 ${t('link_home')}</a>
+      <a class="link-btn" href="https://gamelv-up.blogspot.com/2026/03/lv-up-store-politique-de-confidentialite.html" target="_blank">🔒 ${t('link_privacy')}</a>
+      <a class="link-btn" href="https://gamelv-up.blogspot.com/2025/03/lv-up-store-conditions-dutilisateur.html" target="_blank">📜 ${t('link_terms')}</a>
+    </div>
+    <div class="footer-txt">Lv-UP STORE v1.0 — GAME Lv-UP © 2025-2026 — ${t('rights_reserved')}</div>`;
+  setTimeout(initReveal,100);
+}
+
+// ══════════════════════════════════════════
+// FIREBASE AUTH
+// ══════════════════════════════════════════
+function initAuth(){
+  fbAuth.onAuthStateChanged(async function(user){
+    state.authReady=true;
+    if(user){
+      state.loggedIn=true;
+      state.user.email=user.email||'';
+      state.user.name=user.displayName||'Lv-UP User';
+      state.user.photo=user.photoURL||null;
+      state.user.uid=user.uid;
+      await loadProfileFromFirestore(user.uid);
+      updateHeaderUI();
+      closeModal('login');
+    } else {
+      applyLoggedOutState();
+    }
+  });
+}
+
+async function loadProfileFromFirestore(uid){
+  try{
+    const snap=await fbDb.collection('users').doc(uid).get();
+    if(snap.exists){
+      const d=snap.data();
+      if(d.displayName) state.user.name=d.displayName;
+      if(d.photoURL) state.user.photo=d.photoURL;
+      state.noAds=d.noAds||false;
+      window._purchases=d.purchases||[];
+      window._library=d.library||[];
+    } else {
+      await fbDb.collection('users').doc(uid).set({
+        displayName:state.user.name,
+        email:state.user.email,
+        photoURL:state.user.photo||null,
+        noAds:false,purchases:[],library:[],
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      window._purchases=[];window._library=[];
+    }
+    updateHeaderUI();renderPlatforms();renderProfile();renderLibrary();
+    const b=document.getElementById('ads-banner');if(b)b.style.display=state.noAds?'none':'flex';
+  }catch(e){console.warn('Firestore:',e);}
+}
+
+function applyLoggedOutState(){
+  state.loggedIn=false;state.subTier=0;state.noAds=false;state.session=null;
+  state.user={name:'Lv-UP User',email:'',photo:null};
+  updateHeaderUI();renderPlatforms();renderProfile();renderLibrary();
+  const b=document.getElementById('ads-banner');if(b)b.style.display='flex';
+}
+
+function updateHeaderUI(){
+  const av=document.getElementById('avatar-header');
+  const conn=document.getElementById('conn-header');
+  const prem=document.getElementById('prem-header');
+  if(state.loggedIn){
+    if(av){
+      av.style.display='flex';
+      av.innerHTML=state.user.photo
+        ?`<img src="${state.user.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>`
+        :`<span style="font-size:18px;">👤</span>`;
+    }
+    if(conn)conn.style.display='none';
+    if(prem){prem.style.display=state.subTier>0?'flex':'none';if(state.subTier>0)prem.textContent=TIER_NAMES[state.subTier];}
+  } else {
+    if(av)av.style.display='none';
+    if(conn){conn.style.display='block';conn.textContent=t('connect');}
+    if(prem)prem.style.display='none';
+  }
+}
+
+// ─── GOOGLE ───────────────────────────────
+async function doGoogleLogin(){
+  ['google-login-btn','google-register-btn'].forEach(id=>{
+    const b=document.getElementById(id);if(b){b.disabled=true;b.textContent='⏳';}
+  });
+  try{
+    await fbAuth.signInWithPopup(fbProvider);
+    closeModal('login');
+    showToast('✅ Connecté avec Google ! 🎮','#00cc88');
+  }catch(err){
+    if(err.code==='auth/popup-blocked'||err.code==='auth/cancelled-popup-request'){
+      // Popup bloqué par le navigateur → utiliser redirect
+      await fbAuth.signInWithRedirect(fbProvider);
+    } else if(err.code==='auth/unauthorized-domain'){
+      showToast('⚠️ Domaine non autorisé dans Firebase','#ff9900');
+    } else if(err.code!=='auth/popup-closed-by-user'){
+      showToast('Erreur : '+err.message,'#ff4444');
+    }
+    ['google-login-btn','google-register-btn'].forEach(id=>{
+      const b=document.getElementById(id);if(b){b.disabled=false;b.textContent='Continuer avec Google';}
+    });
+  }
+}
+// Résultat après redirect Google
+fbAuth.getRedirectResult().then(r=>{
+  if(r&&r.user){closeModal('login');showToast('✅ Connecté avec Google ! 🎮','#00cc88');}
+}).catch(()=>{});
+
+// ─── EMAIL LOGIN ──────────────────────────
+async function doEmailLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pwd=document.getElementById('login-password').value;
+  const errEl=document.getElementById('login-error');
+  errEl.style.display='none';
+  if(!email||!pwd){errEl.textContent=t('err_fields');errEl.style.display='block';return;}
+  const btn=document.getElementById('btn-email-login');
+  btn.disabled=true;btn.textContent='⏳';
+  try{
+    await fbAuth.signInWithEmailAndPassword(email,pwd);
+    closeModal('login');
+    showToast('✅ Connecté ! 🎮','#00cc88');
+  }catch(err){
+    const msg=(err.code==='auth/wrong-password'||err.code==='auth/user-not-found'||err.code==='auth/invalid-credential')?t('err_wrong_pwd'):err.message;
+    errEl.textContent=msg;errEl.style.display='block';
+  }finally{btn.disabled=false;btn.textContent=t('tab_login');}
+}
+
+// ─── EMAIL REGISTER ───────────────────────
+async function doEmailRegister(){
+  const firstname=document.getElementById('reg-firstname').value.trim();
+  const lastname=document.getElementById('reg-lastname').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const phone=document.getElementById('reg-phone').value.trim();
+  const country=document.getElementById('reg-country').value;
+  const pwd=document.getElementById('reg-password').value;
+  const confirm=document.getElementById('reg-confirm').value;
+  const errEl=document.getElementById('reg-error');
+  errEl.style.display='none';
+  if(!firstname||!lastname||!email||!phone||!country||!pwd||!confirm){errEl.textContent=t('err_fields');errEl.style.display='block';return;}
+  if(pwd.length<6){errEl.textContent=t('err_pwd_short');errEl.style.display='block';return;}
+  if(pwd!==confirm){errEl.textContent=t('err_pwd_match');errEl.style.display='block';return;}
+  const btn=document.getElementById('btn-email-register');
+  btn.disabled=true;btn.textContent='⏳...';
+  try{
+    const cred=await fbAuth.createUserWithEmailAndPassword(email,pwd);
+    await cred.user.updateProfile({displayName:`${firstname} ${lastname}`});
+    await cred.user.sendEmailVerification();
+    await fbDb.collection('users').doc(cred.user.uid).set({
+      displayName:`${firstname} ${lastname}`,
+      firstname,lastname,email,phone,country,
+      photoURL:null,noAds:false,purchases:[],library:[],
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('reg-success').style.display='block';
+    btn.style.display='none';
+    showToast('📧 Compte créé ! Email de vérification envoyé','#00cc88');
+  }catch(err){
+    const msg=err.code==='auth/email-already-in-use'?t('err_email_taken'):err.message;
+    errEl.textContent=msg;errEl.style.display='block';
+    btn.disabled=false;btn.textContent=t('create_account');
+  }
+}
+
+// ─── COMPLETE PROFILE (post-Google) ───────
+function openCompleteProfile(){
+  populateCountrySelects();
+  ['cp-firstname','cp-lastname','cp-phone'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('cp-country').value='';
+  document.getElementById('cp-error').style.display='none';
+  openModal('modal-complete');
+}
+// ─── FORGOT PWD ───────────────────────────
+async function doForgotPassword(){
+  const email=document.getElementById('login-email').value.trim();
+  const errEl=document.getElementById('login-error');
+  const succEl=document.getElementById('login-success');
+  errEl.style.display='none';succEl.style.display='none';
+  if(!email){errEl.textContent='Entre ton email d\'abord.';errEl.style.display='block';return;}
+  try{
+    await fbAuth.sendPasswordResetEmail(email);
+    succEl.textContent='📧 Email de réinitialisation envoyé !';succEl.style.display='block';
+  }catch(_){errEl.textContent='Erreur. Vérifie l\'adresse email.';errEl.style.display='block';}
+}
+
+function handleLogout(){openModal('modal-logout');}
+function confirmDelete(){openModal('modal-delete');}
+async function doLogout(){
+  await fbAuth.signOut();
+  applyLoggedOutState();closeModal('modal-logout');setTab('home');
+  showToast('👋 Déconnecté','#ff4444');
+}
+async function doDelete(){
+  const btn=document.querySelector('#modal-delete button:last-child');
+  if(btn){btn.disabled=true;btn.textContent='⏳';}
+  const user=fbAuth.currentUser;
+  if(!user){if(btn){btn.disabled=false;btn.textContent='🗑️ Supprimer';}return;}
+  try{
+    await fbDb.collection('users').doc(user.uid).delete();
+    await user.delete();
+    applyLoggedOutState();closeModal('modal-delete');setTab('home');
+    showToast('🗑️ Compte supprimé','#ff4444');
+  }catch(_){showToast('Reconnecte-toi puis réessaie ❌','#ff4444');}
+  finally{if(btn){btn.disabled=false;btn.textContent='🗑️ Supprimer';}}
+}
+function switchAuthTab(tab){
+  const isL=tab==='login';
+  document.getElementById('form-login').style.display=isL?'block':'none';
+  document.getElementById('form-register').style.display=isL?'none':'block';
+  const lb=document.getElementById('tab-login-btn');const rb=document.getElementById('tab-register-btn');
+  if(lb){lb.style.background=isL?'var(--accent)':'transparent';lb.style.color=isL?'#fff':'var(--sub)';}
+  if(rb){rb.style.background=isL?'transparent':'var(--accent)';rb.style.color=isL?'var(--sub)':'#fff';}
+}
+function togglePwd(id){const inp=document.getElementById(id);if(inp)inp.type=inp.type==='password'?'text':'password';}
+
+// ══════════════════════════════════════════
+// SUBSCRIBE / PAYMENT
+// ══════════════════════════════════════════
+function handleSubscribeClick(){if(!state.loggedIn){openModal('login');return;}openModal('subscribe');}
+function handleNoAdsClick(){if(!state.loggedIn){openModal('login');return;}openModal('noads');}
+
+function openPayment(type){
+  if(!state.loggedIn){openModal('login');return;}
+  const titles={noob:'ABONNEMENT NOOB 🟢',pro:'ABONNEMENT PRO 🔵',elite:'ABONNEMENT ELITE 🟣',maitre:'ABONNEMENT MAÎTRE 🏆',noads:'SANS PUBLICITÉS 🚫'};
+  const subtitles={noob:'500 F/mois — PSP + PS2',pro:'1 000 F/mois — Noob + Wii + Apps',elite:'2 000 F/mois — Pro + PSVita + PS3 + Switch + Wii U',maitre:'5 000 F/mois — TOUT débloqué + Cadeaux',noads:'5 000 F — Paiement unique à vie'};
+  const pt=document.getElementById('pay-title');if(pt)pt.textContent=titles[type]||'PAIEMENT';
+  const ps=document.getElementById('pay-subtitle');if(ps)ps.textContent=subtitles[type]||'';
+  closeModal('modal-subscribe');closeModal('modal-noads');
+  openModal('modal-payment');
+}
+
+// ══════════════════════════════════════════
+// GAME DETAIL
+// ══════════════════════════════════════════
+function openGameDetail(game){
+  // CHANGEMENT: Pas besoin d'être connecté pour voir les détails du jeu
+  // La connexion ne sera demandée que lors du clic sur "Acheter"
+  state.selGame=game;
+  const plat=PLATFORMS.find(p=>p.id===game.platform)||{label:game.platform,color:'var(--accent)'};
+  const desc=GAME_DESCS[game.title]||'Un jeu incontournable. Télécharge-le et découvre une expérience unique.';
+  const cover=document.getElementById('dl-cover');
+  const cw=document.getElementById('dl-cover-wrap');
+  state.selGame=game;
+  if(!game) return;
+  if(game.img){cover.src=game.img;cover.style.display='block';}
+  else{cover.style.display='none';cw.style.background=`linear-gradient(135deg,${plat.color}33,var(--bg2))`;}
+  document.getElementById('dl-title').textContent=game.title;
+  document.getElementById('dl-platform-badge').textContent=plat.label;
+  document.getElementById('dl-platform-badge').style.borderColor=plat.color+'88';
+  document.getElementById('dl-rating-badge').textContent='★ '+game.rating;
+  document.getElementById('dl-size').textContent='📦 '+game.size;
+  document.getElementById('dl-desc').textContent=desc;
+  
+  // Video YouTube avec AUTOPLAY
+  const ytEl=document.getElementById('dl-youtube');
+  if(ytEl){
+    if(game.youtube){
+      // Autoplay: autoplay=1, mute=1 (chrome requiert muted pour autoplay)
+      ytEl.innerHTML=`<iframe id="yt-player" width="100%" height="220" src="https://www.youtube.com/embed/${game.youtube}?autoplay=1&mute=0&controls=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:12px;"></iframe>`;
+      state.currentYTVideo=game.youtube;
+    } else {
+      ytEl.innerHTML=`<div style="width:100%;height:180px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--sub);">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="#ff2200"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+        <span style="font-size:11px;">Gameplay — Bientôt disponible</span>
+      </div>`;
+      state.currentYTVideo=null;
+    }
+  }
+  document.getElementById('dl-screenshots').innerHTML=Array(3).fill(0).map((_,i)=>`
+    <div style="flex-shrink:0;width:160px;height:90px;border-radius:10px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:11px;">📸 ${i+1}</div>`).join('');
+  document.getElementById('dl-infos').innerHTML=`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:4px;">🎮</div><div style="font-size:11px;color:var(--sub);">${t('platform_lbl')}</div><div style="font-size:13px;font-weight:700;color:${plat.color};">${plat.label}</div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:4px;">📦</div><div style="font-size:11px;color:var(--sub);">${t('size_lbl')}</div><div style="font-size:13px;font-weight:700;color:var(--text);">${game.size}</div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:4px;">⭐</div><div style="font-size:11px;color:var(--sub);">${t('rating_lbl')}</div><div style="font-size:13px;font-weight:700;color:var(--gold);">${game.rating}/5</div></div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:4px;">✅</div><div style="font-size:11px;color:var(--sub);">${t('status_lbl')}</div><div style="font-size:13px;font-weight:700;color:#00cc88;">${t('available')}</div></div>`;
+  openModal('modal-download');
+}
+
+function confirmDownload(){
+  const g=state.selGame;
+  if(!g) return;
+  if(!hasPurchased(g.title)){openPurchaseModal(g);return;}
+  closeModal('modal-download');
+  showToast(t('download_started'),'#00c8ff');
+  // Simulation progression download
+  state.activeDownload={title:g.title,size:g.size,progress:0};
+  setTab('downloads');
+  let prog=0;
+  const iv=setInterval(()=>{
+    prog+=Math.floor(Math.random()*8)+3;
+    if(prog>=100){prog=100;clearInterval(iv);
+      state.activeDownload=null;
+      if(!state.completedDownloads) state.completedDownloads=[];
+      state.completedDownloads.unshift({title:g.title,size:g.size});
+      showToast('✅ '+g.title+' téléchargé !','#00cc88');
+    } else {state.activeDownload.progress=prog;}
+    renderDownloads();
+  },400);
+}
+
+async function doPurchase(){
+  const g=state.selGame;if(!g)return;
+  if(!state.loggedIn){closeModal('modal-purchase');openModal('login');return;}
+  await markPurchased(g.title);
+  closeModal('modal-purchase');
+  showToast('✅ '+g.title+' acheté !','#00cc88');
+  renderGames();
+}
+
+// ══════════════════════════════════════════
+// PAYMENT METHODS (5 options)
+// ══════════════════════════════════════════
+let paymentState={method:null,amount:0};
+
+function selectPaymentMethod(method){
+  paymentState.method=method;
+  const formDiv=document.getElementById('payment-form');
+  const payBtn=document.getElementById('pay-btn');
+  
+  formDiv.style.display='block';
+  payBtn.style.display='block';
+  
+  let formHTML='';
+  
+  switch(method){
+    case 'wave':
+      formHTML=`
+        <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">NUMÉRO WAVE</div>
+        <input id="wave-number" type="tel" placeholder="ex: 2250501234567" maxlength="13"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+        <div style="font-size:11px;color:var(--sub);text-align:center;">
+          📱 Confirme la transaction sur ton téléphone
+        </div>
+      `;
+      break;
+      
+    case 'orange':
+      formHTML=`
+        <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">NUMÉRO ORANGE MONEY</div>
+        <input id="orange-number" type="tel" placeholder="ex: 2250123456789" maxlength="13"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+        <div style="font-size:11px;color:var(--sub);text-align:center;">
+          📱 Confirme avec le code reçu par SMS
+        </div>
+      `;
+      break;
+      
+    case 'mtn':
+      formHTML=`
+        <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">NUMÉRO MTN MONEY</div>
+        <input id="mtn-number" type="tel" placeholder="ex: 2250123456789" maxlength="13"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+        <div style="font-size:11px;color:var(--sub);text-align:center;">
+          📱 Confirme avec le code reçu par SMS
+        </div>
+      `;
+      break;
+      
+    case 'moov':
+      formHTML=`
+        <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">NUMÉRO MOOV MONEY</div>
+        <input id="moov-number" type="tel" placeholder="ex: 2250123456789" maxlength="13"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+        <div style="font-size:11px;color:var(--sub);text-align:center;">
+          📱 Confirme avec le code reçu par SMS
+        </div>
+      `;
+      break;
+      
+    case 'visa':
+      formHTML=`
+        <div style="font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin-bottom:10px;">NUMÉRO DE CARTE</div>
+        <input id="card-number" type="text" placeholder="1234 5678 9012 3456" maxlength="19"
+          style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;margin-bottom:10px;"/>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+          <input id="card-expiry" type="text" placeholder="MM/YY" maxlength="5"
+            style="flex:1;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;"/>
+          <input id="card-cvv" type="text" placeholder="CVV" maxlength="3"
+            style="flex:0.4;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px;font-size:14px;color:var(--text);font-family:inherit;outline:none;"/>
+        </div>
+        <div style="font-size:11px;color:var(--sub);text-align:center;">
+          🔒 Paiement sécurisé - Tes données bancaires ne sont jamais stockées
+        </div>
+      `;
+      break;
+  }
+  
+  formDiv.innerHTML=formHTML;
+}
+
+function processPay(){
+  const method=paymentState.method;
+  const g=state.selGame;
+  if(!method||!g) return;
+  
+  let validated=false;
+  let validationMsg='';
+  
+  switch(method){
+    case 'wave':
+      const waveNum=document.getElementById('wave-number')?.value;
+      if(!waveNum||waveNum.length<10){validationMsg='Numéro Wave invalide';break;}
+      validated=true;
+      break;
+      
+    case 'orange':
+      const orangeNum=document.getElementById('orange-number')?.value;
+      if(!orangeNum||orangeNum.length<10){validationMsg='Numéro Orange invalide';break;}
+      validated=true;
+      break;
+      
+    case 'mtn':
+      const mtnNum=document.getElementById('mtn-number')?.value;
+      if(!mtnNum||mtnNum.length<10){validationMsg='Numéro MTN invalide';break;}
+      validated=true;
+      break;
+      
+    case 'moov':
+      const moovNum=document.getElementById('moov-number')?.value;
+      if(!moovNum||moovNum.length<10){validationMsg='Numéro Moov invalide';break;}
+      validated=true;
+      break;
+      
+    case 'visa':
+      const cardNum=document.getElementById('card-number')?.value?.replace(/\s/g,'');
+      const expiry=document.getElementById('card-expiry')?.value;
+      const cvv=document.getElementById('card-cvv')?.value;
+      if(!cardNum||cardNum.length<13||!expiry||!cvv){validationMsg='Infos carte incomplètes';break;}
+      validated=true;
+      break;
+  }
+  
+  if(!validated){showToast('❌ '+validationMsg,'#ff4444');return;}
+  
+  // Simulation du paiement
+  showToast('⏳ Traitement du paiement...','#00c8ff');
+  setTimeout(async()=>{
+    await markPurchased(g.title);
+    closeModal('modal-payment');
+    showToast('✅ Paiement réussi! '+g.title+' acheté!','#00cc88');
+    renderGames();
+  },2000);
+}
+function openPurchaseModal(g){
+  state.selGame=g;
+  const plat=PLATFORMS.find(p=>p.id===g.platform);
+  const el=document.getElementById('purchase-game-info');
+  if(el) el.innerHTML=`
+    <div style="font-size:32px;margin-bottom:8px;">🎮</div>
+    <div style="font-weight:700;font-size:16px;color:var(--text);margin-bottom:4px;">${g.title}</div>
+    <div style="font-size:12px;color:${plat?.color||'var(--accent)'};">${plat?.label||g.platform} • ${g.size}</div>
+    <div style="font-size:28px;font-weight:900;color:var(--gold);margin:12px 0;">${g.price||0} F CFA</div>
+  `;
+  openModal('modal-purchase');
+}
+
+
+
+// ══════════════════════════════════════════
+// PROFILE EDIT
+// ══════════════════════════════════════════
+function openEdit(){
+  state.editPhoto=null;
+  const nameEl=document.getElementById('edit-name');if(nameEl){nameEl.value=state.user.name;document.getElementById('char-count').textContent=state.user.name.length+'/30';}
+  const prev=document.getElementById('av-preview');
+  const rmBtn=document.getElementById('remove-photo-btn');
+  if(state.user.photo){
+    state.editPhoto=state.user.photo;
+    prev.innerHTML=`<img src="${state.user.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>`;
+    if(rmBtn)rmBtn.style.display='inline-flex';
+  } else {
+    prev.innerHTML='<span style="font-size:36px;">👤</span>';
+    if(rmBtn)rmBtn.style.display='none';
+  }
+  openModal('modal-edit');
+}
+function handlePhotoUpload(e){
+  const file=e.target.files?.[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    state.editPhoto=ev.target.result;
+    const prev=document.getElementById('av-preview');
+    if(prev)prev.innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>`;
+    const btn=document.getElementById('remove-photo-btn');if(btn)btn.style.display='inline-flex';
+  };
+  reader.readAsDataURL(file);
+}
+function removeEditPhoto(){
+  state.editPhoto=null;
+  const inp=document.getElementById('photo-input');if(inp)inp.value='';
+  const prev=document.getElementById('av-preview');if(prev)prev.innerHTML='<span style="font-size:36px;">👤</span>';
+  const btn=document.getElementById('remove-photo-btn');if(btn)btn.style.display='none';
+}
+async function saveProfile(){
+  const user=fbAuth.currentUser;if(!user)return;
+  const name=document.getElementById('edit-name')?.value?.trim();
+  if(!name){showToast(t('err_fields'),'#ff4444');return;}
+  try{
+    await user.updateProfile({displayName:name,photoURL:state.editPhoto||user.photoURL});
+    await fbDb.collection('users').doc(user.uid).update({
+      displayName:name,photoURL:state.editPhoto||user.photoURL||null
+    });
+    state.user.name=name;
+    if(state.editPhoto)state.user.photo=state.editPhoto;
+    closeModal('modal-edit');updateHeaderUI();
+    showToast(t('save'),'#00cc88');
+  }catch(e){showToast('❌ '+e.message,'#ff4444');}
+}
+
+
+// ══════════════════════════════════════════
+// ONESIGNAL / PERMISSIONS
+// ══════════════════════════════════════════
+function initOneSignal(){
+  if(isMedianApp){try{if(window.median?.onesignal)window.median.onesignal.promptForPushNotifications();}catch(_){}}
+  else{
+    window.OneSignalDeferred=window.OneSignalDeferred||[];
+    OneSignalDeferred.push(async OS=>{
+      await OS.init({appId:ONESIGNAL_APP_ID,allowLocalhostAsSecureOrigin:true});
+      await OS.Notifications.requestPermission();
+    });
+  }
+}
+async function requestAllPermissions(){
+  if(navigator.mediaDevices){try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(tr=>tr.stop());}catch(_){}}
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(()=>{},()=>{},{timeout:3000});}
+}
+
+// ══════════════════════════════════════════
+// MODALS — fix scroll bug
+// ══════════════════════════════════════════
+let _scrollY=0;
+const _modalStack=[];
+function openModal(id){
+  const el=document.getElementById('modal-'+id)||document.getElementById(id);
+  if(!el||el.classList.contains('open'))return;
+  if(_modalStack.length===0){
+    _scrollY=window.scrollY;
+    document.documentElement.style.overflow='hidden';
+    document.documentElement.style.position='relative';
+  }
+  _modalStack.push(el.id);
+  el.classList.add('open');
+  const sheet=el.querySelector('.modal-sheet');
+  const handle=el.querySelector('.modal-handle');
+  if(sheet&&handle&&!handle._swipe){
+    handle._swipe=true;
+    let sy=0,active=false;
+    handle.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;active=true;sheet.style.transition='none';},{passive:true});
+    handle.addEventListener('touchmove',e=>{if(!active)return;const dy=Math.max(0,e.touches[0].clientY-sy);sheet.style.transform=`translateY(${dy}px)`;},{passive:true});
+    handle.addEventListener('touchend',e=>{
+      if(!active)return;active=false;
+      const dy=e.changedTouches[0].clientY-sy;sheet.style.transition='';
+      if(dy>80){sheet.style.transform='translateY(110%)';setTimeout(()=>{sheet.style.transform='';closeModal(el.id);},300);}
+      else sheet.style.transform='';
+    },{passive:true});
+  }
+  // Re-init scroll animations dans les modals
+  setTimeout(()=>el.querySelectorAll('.reveal,.reveal-stagger').forEach(rv=>{
+    rv.classList.remove('visible');
+    if(revealObserver)revealObserver.observe(rv);
+  }),80);
+}
+function closeModal(id){
+  const fullId=id.startsWith('modal-')?id:'modal-'+id;
+  const el=document.getElementById(fullId)||document.getElementById(id);
+  if(!el)return;
+  
+  // Arrêter la vidéo YouTube si c'est la modal download qui ferme
+  if(fullId==='modal-download'||id==='download'){
+    const ytFrame=document.getElementById('yt-player');
+    if(ytFrame){
+      ytFrame.src=''; // Arrêter la vidéo en supprimant la src
+    }
+    state.currentYTVideo=null;
+  }
+  
+  el.classList.remove('open');
+  [fullId,id].forEach(k=>{const i=_modalStack.indexOf(k);if(i!==-1)_modalStack.splice(i,1);});
+  if(!document.querySelector('.modal-overlay.open')){
+    _modalStack.length=0;
+    document.documentElement.style.overflow='';
+    document.documentElement.style.position='';
+    window.scrollTo(0,_scrollY);
+  }
+}
+function closeModalOnBg(e,id){
+  if(e.target===document.getElementById(id)){
+    const sheet=document.querySelector(`#${id} .modal-sheet`);
+    if(sheet){
+      sheet.style.transform='translateY(110%)';
+      sheet.style.transition='transform .28s cubic-bezier(.4,0,.2,1)';
+      setTimeout(()=>{sheet.style.transform='';sheet.style.transition='';closeModal(id);},290);
+    } else closeModal(id);
+  }
+}
+</script>
+</body>
+</html>
